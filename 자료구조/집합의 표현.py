@@ -1,20 +1,33 @@
 import sys
-n,m = map(int,sys.stdin.readline().split())
-groups = {}
-for i in range(1,n+1):
-    groups[i] = set([i])
+
+sys.setrecursionlimit(100000)
+n, m = map(int, sys.stdin.readline().split())
+groups = [i for i in range(0, n + 1)]
+
+
+def find(x):
+    if groups[x] == x:
+        return x
+    groups[x] = find(groups[x])
+    return groups[x]
+
+
+def union(x, y):
+    x = find(x)
+    y = find(y)
+    if x != y:
+        groups[x] = y
+
+
 for i in range(m):
-    query = list(map(int,sys.stdin.readline().split()))
+    query = list(map(int, sys.stdin.readline().split()))
     if query[0] == 0:
-        temp1 = groups[query[1]]
-        temp2 = groups[query[2]]
-        newS = temp1.union(temp2)
-        groups[query[1]] = newS
-        groups[query[2]] = newS
+        union(query[1], query[2])
     else:
-        temp1 = groups[query[1]]
-        temp2 = groups[query[2]]
+        temp1 = find(query[1])
+        temp2 = find(query[2])
         if temp1 == temp2:
-            print('YES')
+            print('yes')
         else:
-            print('NO')
+            print('no')
+
