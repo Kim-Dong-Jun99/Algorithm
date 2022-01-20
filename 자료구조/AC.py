@@ -1,37 +1,36 @@
 import sys
 from collections import deque
 
-t = int(input())
-
-for i in range(t):
-    p = sys.stdin.readline().rstrip()
-    n = int(input())
-    arr = sys.stdin.readline().rstrip()[1:-1].split(",")
-    queue = deque(arr)
-
-    rev, front, back = 0, 0, len(queue)-1
-    flag = 0
+tc = int(sys.stdin.readline())
+for _ in range(tc):
+    func = sys.stdin.readline().rstrip()
+    n = int(sys.stdin.readline())
+    ns = sys.stdin.readline().rstrip()[1:-1].split(',')
     if n == 0:
-        queue = []
-        front = 0
-        back = 0
+        ns = []
+    else:
+        ns = deque(ns)
 
-    for j in p:
-        if j == 'R':
-            rev += 1
-        elif j == 'D':
-            if len(queue) < 1:
-                flag = 1
-                print("error")
+    r = 0
+    error = False
+    for i in func:
+        if i == 'R':
+            r += 1
+        else:
+            if len(ns) < 1:
+                error = True
                 break
             else:
-                if rev % 2 == 0:
-                    queue.popleft()
+                if r % 2 == 1:
+                    ns.pop()
                 else:
-                    queue.pop()
-    if flag == 0:
-        if rev % 2 == 0:
-            print("[" + ",".join(queue) + "]")
+                    ns.popleft()
+
+    if error:
+        print('error')
+    else:
+        if r % 2 == 1:
+            ns.reverse()
+            print("[" + ",".join(ns) + "]")
         else:
-            queue.reverse()
-            print("[" + ",".join(queue) + "]")
+            print("[" + ",".join(ns) + "]")
