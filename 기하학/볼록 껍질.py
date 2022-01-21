@@ -40,14 +40,18 @@ def ccw(a, b, c):
 # 양수면 CCW
 
 jmarch = [points[0], points[1], points[2]]
+if ccw(jmarch[0],jmarch[1],jmarch[2]) == 0:
+    jmarch.pop(1)
 for i in range(3, n):
     while True:
         check = ccw(jmarch[-2], jmarch[-1], points[i])
         if check == 0:
             jmarch.pop()
             jmarch.append(points[i])
+            break
         elif check > 0:
             jmarch.append(points[i])
+            break
         else:
             jmarch.pop()
 print(len(jmarch))
