@@ -1,32 +1,26 @@
-import sys
-
-n = sys.stdin.readline().strip()
-pattern = sys.stdin.readline().strip()
-kmp = [0 for i in range(len(pattern) + 1)]
-kmp[0] = -1
-kmp[1] = 0
-for i in range(1, len(kmp)-1):
-    if pattern[kmp[i]] == pattern[i]:
-        kmp[i+1] = kmp[i]+1
-    else:
-        if pattern[i] == pattern[0]:
-            kmp[i+1] = 1
-        else:
-            kmp[i+1] = 0
+n = input()
+pattern = input()
+kmp = [0 for i in range(len(pattern))]
+j = 0
+for i in range(1, len(pattern)):
+    while j > 0 and pattern[i] != pattern[j]:
+        j = kmp[j - 1]
+    if pattern[i] == pattern[j]:
+        j += 1
+        kmp[i] = j
 
 result = []
-i = 0
-while i + len(pattern) - 1 < len(n):
-    j = 0
-    while j < len(kmp) - 1:
-        if n[i + j] == pattern[j]:
-            j += 1
+j = 0
+for i in range(len(n)):
+    while j > 0 and n[i] != pattern[j]:
+        j = kmp[j - 1]
+    if n[i] == pattern[j]:
+        if j == len(pattern) - 1:
+            result.append(i - len(pattern) + 2)
+            j = kmp[j]
         else:
-            i += j - kmp[j]
-            break
-    if j == len(kmp) - 1:
-        result.append(str(i + 1))
-        i += j - kmp[j]
+            j += 1
 
 print(len(result))
-print(' '.join(result))
+for i in result:
+    print(i, end=' ')
