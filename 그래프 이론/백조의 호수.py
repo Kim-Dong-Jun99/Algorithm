@@ -60,39 +60,50 @@ for i in range(n):
         elif lake[i][j] == 'L':
             swan.append([i,j])
 days = 0
-# print(melt)
-# print(swan)
+
+nextmelt = [[0 for m_itr in range(m)] for n_itr in range(n)]
+visited = [[0 for i_itr in range(m)] for j_itr in range(n)]
+nextV = [swan[0]]
+visited[swan[0][0]][swan[0][1]] = 1
+edge = []
+while nextV:
+    tempEdge = []
+    for i in nextV:
+        check = True
+        for j in cango(i[0],i[1]):
+            if visited[j[0]][j[1]] == 0:
+                visited[j[0]][j[1]] = 1
+                tempEdge.append(j)
+                check = False
+        if check :
+            edge.append(i)
+
+    nextV = tempEdge
+
 while True:
-    # for i in lake:
-    #     for j in i:
-    #         print(j,end ='')
-    #     print()
-    # print()
-    visited = [[0 for i_itr in range(m)] for j_itr in range(n)]
-    nextV = [swan[0]]
-    visited[swan[0][0]][swan[0][1]] = 1
-    while nextV:
-        temp = []
-        for i in nextV:
-            for j in cango(i[0],i[1]):
-                if visited[j[0]][j[1]] == 0:
-                    visited[j[0]][j[1]] = 1
-                    temp.append(j)
-        nextV = temp
     if visited[swan[1][0]][swan[1][1]] == 1:
         print(days)
         break
-    # for i in visited:
-    #     for j in i:
-    #         print(j,end = '')
-    #     print()
-    nextmelt = [[0 for m_itr in range(m)] for n_itr in range(n)]
-    temp = []
+    tempMelt = []
     for i in melt:
         lake[i[0]][i[1]] = '.'
         for j in meltnext(i[0],i[1]):
             if nextmelt[j[0]][j[1]] == 0:
-                temp.append(j)
+                tempMelt.append(j)
                 nextmelt[j[0]][j[1]] = 1
-    melt = temp
+    melt = tempMelt
     days += 1
+
+    nextEdge = []
+    while edge:
+        temp = []
+        for i in edge:
+            check = True
+            for j in cango(i[0],i[1]):
+                if visited[j[0]][j[1]] == 0:
+                    temp.append(j)
+                    visited[j[0]][j[1]] = 1
+                    check = False
+            nextEdge.append(i)
+        edge = temp
+    edge = nextEdge
