@@ -1,4 +1,7 @@
 import sys
+from collections import deque
+import time
+start = time.time()
 
 def checkmelt(i,j):
     if i-1 > -1:
@@ -16,7 +19,7 @@ def checkmelt(i,j):
     return False
 
 def meltnext(i,j):
-    result = []
+    result = deque([])
     if i-1 > -1:
         if lake[i-1][j] == 'X':
             result.append([i-1,j])
@@ -32,7 +35,7 @@ def meltnext(i,j):
     return result
 
 def cango(i,j):
-    result = []
+    result = deque([])
     if i - 1 > -1:
         if lake[i - 1][j] == '.' or lake[i-1][j] == 'L':
             result.append([i - 1, j])
@@ -49,25 +52,24 @@ def cango(i,j):
 
 n,m = map(int,sys.stdin.readline().split())
 lake = [list(sys.stdin.readline().strip()) for i in range(n)]
-melt = []
+melt = deque([])
 swan = []
-
+days = 0
+nextmelt = [[0 for m_itr in range(m)] for n_itr in range(n)]
+visited = [[0 for i_itr in range(m)] for j_itr in range(n)]
 for i in range(n):
     for j in range(m):
         if lake[i][j] == 'X':
             if checkmelt(i,j):
                 melt.append([i,j])
+                nextmelt[i][j] = 1
         elif lake[i][j] == 'L':
             swan.append([i,j])
-days = 0
-
-nextmelt = [[0 for m_itr in range(m)] for n_itr in range(n)]
-visited = [[0 for i_itr in range(m)] for j_itr in range(n)]
-nextV = [swan[0]]
+nextV = deque([swan[0]])
 visited[swan[0][0]][swan[0][1]] = 1
-edge = []
+edge = deque([])
 while nextV:
-    tempEdge = []
+    tempEdge = deque([])
     for i in nextV:
         check = True
         for j in cango(i[0],i[1]):
@@ -75,16 +77,15 @@ while nextV:
                 visited[j[0]][j[1]] = 1
                 tempEdge.append(j)
                 check = False
-        if check :
+        if check:
             edge.append(i)
-
     nextV = tempEdge
 
 while True:
     if visited[swan[1][0]][swan[1][1]] == 1:
         print(days)
         break
-    tempMelt = []
+    tempMelt = deque([])
     for i in melt:
         lake[i[0]][i[1]] = '.'
         for j in meltnext(i[0],i[1]):
@@ -94,9 +95,9 @@ while True:
     melt = tempMelt
     days += 1
 
-    nextEdge = []
+    nextEdge = deque([])
     while edge:
-        temp = []
+        temp = deque([])
         for i in edge:
             check = True
             for j in cango(i[0],i[1]):
@@ -104,6 +105,9 @@ while True:
                     temp.append(j)
                     visited[j[0]][j[1]] = 1
                     check = False
-            nextEdge.append(i)
+            if check:
+                nextEdge.append(i)
         edge = temp
     edge = nextEdge
+
+print(time.time()-start)
