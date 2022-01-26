@@ -18,11 +18,8 @@ while left <= right:
     mid = (left + right) // 2
 
     visited = [0 for _ in range(n + 1)]
-    nextV = []
-    for i in snw:
-        if i[1] >= mid:
-            nextV.append(i[0])
-            visited[i[0]] = 1
+    nextV = [start]
+    visited[start] = 1
     while nextV:
         temp = []
         for i in nextV:
