@@ -18,7 +18,10 @@ if ns[0] < 0:
         rindex = len(ns)-1
         while rindex >= index:
             if rindex-1 >= index:
-                result += ns[rindex]*ns[rindex-1]
+                if ns[rindex] != 1 and ns[rindex-1] != 1:
+                    result += ns[rindex] * ns[rindex-1]
+                else:
+                    result += ns[rindex] + ns[rindex-1]
                 rindex -= 2
             else:
                 result += ns[rindex]
@@ -43,6 +46,5 @@ else:
     if index == 0:
         result += ns[index]
     print(result)
-
 
 
