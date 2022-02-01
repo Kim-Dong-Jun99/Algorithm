@@ -31,7 +31,7 @@ def bt(i):
             for k in range(9):
                 print(sdk[j][k], end=' ')
             print()
-        return
+        sys.exit()
     else:
         for j in check(empty[i][0], empty[i][1]):
             sdk[empty[i][0]][empty[i][1]] = j
