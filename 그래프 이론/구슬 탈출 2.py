@@ -17,7 +17,7 @@ for i in range(n):
 def tilt(red, blue, d):
     newR = red[:]
     newB = blue[:]
-    direction = [[0, 0], [-1, 0], [0, 1], [1, 0], [0, -1]]
+    direction = [[0,0],[-1,0],[0,1],[1,0],[0,-1]]
     result = []
     if (d == 1 or d == 3) and newR[1] == newB[1]:
         out = False
@@ -31,7 +31,7 @@ def tilt(red, blue, d):
                     if board[newB[0]][newB[1]] == 'O':
                         out = True
                         break
-                while board[newR[0] + direction[d][0]][newR[1]] != '#' and (newB[0] < newR[0] + direction[d][0] or out):
+                while board[newR[0] + direction[d][0]][newR[1]] != '#' and (newB[0] < newR[0]+direction[d][0] or out):
                     newR[0] += direction[d][0]
                     # newR[1] += direction[d][1]
                     if board[newR[0]][newR[1]] == 'O':
@@ -174,11 +174,13 @@ def tilt(red, blue, d):
     return result
 
 
-visitedR = [[0 for _ in range(m)] for _ in range(n)]
-visitedB = [[0 for _ in range(m)] for _ in range(n)]
-
-visitedR[red[0]][red[1]] = 1
-visitedB[blue[0]][blue[1]] = 1
+# visitedR = [[0 for _ in range(m)] for _ in range(n)]
+# visitedB = [[0 for _ in range(m)] for _ in range(n)]
+#
+# visitedR[red[0]][red[1]] = 1
+# visitedB[blue[0]][blue[1]] = 1
+table = {}
+table[(tuple(red),tuple(blue))] = 1
 nextV = [[red, blue]]
 tcount = 0
 check = False
@@ -186,16 +188,27 @@ while nextV and tcount < 10:
     temp = []
     tcount += 1
     for i in nextV:
-        for j in range(1, 5):
-            k = tilt(i[0], i[1], j)
-            if visitedR[k[0][0]][k[0][1]] == 0 or visitedB[k[1][0]][k[1][1]] == 0:
+        for j in range(1,5):
+            k = tilt(i[0],i[1],j)
+            try:
+                a = table[(tuple(k[0]),tuple(k[1]))]
+            except:
                 if board[k[0][0]][k[0][1]] == 'O' and board[k[1][0]][k[1][1]] != 'O':
                     check = True
                     break
                 elif board[k[1][0]][k[1][1]] != 'O':
                     temp.append(k)
-                    visitedR[k[0][0]][k[0][1]] = 1
-                    visitedB[k[1][0]][k[1][1]] = 1
+                    # visitedR[k[0][0]][k[0][1]] = 1
+                    # visitedB[k[1][0]][k[1][1]] = 1
+                    table[(tuple(k[0]),tuple(k[1]))] = 1
+            # if visitedR[k[0][0]][k[0][1]] == 0 or visitedB[k[1][0]][k[1][1]] == 0:
+            #     if board[k[0][0]][k[0][1]] == 'O' and board[k[1][0]][k[1][1]] != 'O':
+            #         check = True
+            #         break
+            #     elif board[k[1][0]][k[1][1]] != 'O':
+            #         temp.append(k)
+            #         visitedR[k[0][0]][k[0][1]] = 1
+            #         visitedB[k[1][0]][k[1][1]] = 1
         if check:
             break
     if check:
@@ -206,4 +219,5 @@ while nextV and tcount < 10:
 
 if check == False:
     print(-1)
+
 
