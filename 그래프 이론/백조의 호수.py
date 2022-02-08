@@ -1,112 +1,72 @@
+from collections import deque
 import sys
-
-sys.setrecursionlimit(10 ** 9)
-n, m = map(int, sys.stdin.readline().split())
-lake = [sys.stdin.readline().strip() for _ in range(n)]
-parent = {}
-
-
-def find(x):
-    if x == parent[x]:
-        return x
-    else:
-        parent[x] = find(parent[x])
-        return parent[x]
-
-
-def union(x, y):
-    rx = find(x)
-    ry = find(y)
-    if rx != ry:
-        parent[rx] = ry
-
-
-def findn(i, j):
-    result = []
-    check = False
-    if i - 1 > -1:
-        if lake[i - 1][j] == '.' or lake[i - 1][j] == 'L':
-            if parent.get((i - 1, j), -1) == -1:
-                result.append((i - 1, j))
-        else:
-            check = True
-    if i + 1 < n:
-        if lake[i + 1][j] == '.' or lake[i + 1][j] == 'L':
-            if parent.get((i + 1, j), -1) == -1:
-                result.append((i + 1, j))
-        else:
-            check = True
-    if j - 1 > -1:
-        if lake[i][j - 1] == '.' or lake[i][j - 1] == 'L':
-            if parent.get((i, j - 1), -1) == -1:
-                result.append((i, j - 1))
-        else:
-            check = True
-    if j + 1 < m:
-        if lake[i][j + 1] == '.' or lake[i][j + 1] == 'L':
-            if parent.get((i, j + 1), -1) == -1:
-                result.append((i, j + 1))
-        else:
-            check = True
-    if check:
-        wateredges.append((i, j))
-    return result
-
-
-wateredges = []
-
+n,m = map(int,sys.stdin.readline().split())
+visited = [[0]*m for _ in range(n)]
+wvisited = [[0]*m for _ in range(n)]
+lake = []
 swan = []
+q,qtemp,wq,wqtemp = deque(),deque(),deque(),deque()
 for i in range(n):
-    for j in range(m):
+    r = list(sys.stdin.readline().strip())
+    lake.append(r)
+    for j,k in enumerate(r):
         if lake[i][j] == 'L':
-            swan.append((i, j))
-        if (lake[i][j] == '.' or lake[i][j] == 'L') and parent.get((i, j), -1) == -1:
-
-            parent[(i, j)] = (i, j)
-            nextV = [(i, j)]
-            while nextV:
-                temp = []
-                for k in nextV:
-                    for l in findn(k[0], k[1]):
-                        parent[l] = l
-                        union((i, j), l)
-                        temp.append(l)
-
-                nextV = temp
+            swan.extend([i,j])
+            wq.append([i,j])
+        elif lake[i][j] == '.':
+            wvisited[i][j] = 1
+            wq.append([i,j])
 
 
-def nextmelt(i, j):
-    result = []
-    if i - 1 > -1:
-        result.append((i - 1, j))
-    if i + 1 < n:
-        result.append((i + 1, j))
-    if j - 1 > -1:
-        result.append((i, j - 1))
-    if j + 1 < m:
-        result.append((i, j + 1))
-    return result
-
-
+x1,y1,x2,y2 = swan
+q.append([x1,y1])
+lake[x1][y1],lake[x2][y2],visited[x1][y1] = '.','.',1
 count = 0
-while find(swan[0]) != find(swan[1]) and count < 10:
 
-    tempW = []
-    tempI = []
+dx = [1,-1,0,0]
+dy = [0,0,1,-1]
 
-    for i in wateredges:
-        for j in nextmelt(i[0], i[1]):
-            if parent.get(j, -1) == -1:
-                parent[j] = j
-                union(i, j)
-                tempW.append(j)
-                for k in nextmelt(j[0], j[1]):
-                    if parent.get(k, -1) != -1:
-                        union(j, k)
-            else:
-                union(i, j)
-    wateredges = tempW
 
+def bfs():
+    while q:
+        x,y = q.popleft()
+        if x == x2 and y == y2:
+            return 1
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if 0 <= nx < n and 0 <= ny < m:
+                if visited[nx][ny] == 0:
+                    if lake[nx][ny] == '.':
+                        q.append([nx,ny])
+                    else:
+                        qtemp.append([nx,ny])
+                    visited[nx][ny] = 1
+    return 0
+
+
+def melt():
+    while wq:
+        x,y = wq.popleft()
+        if lake[x][y] == 'X':
+            lake[x][y] = '.'
+        for i in range(4):
+            nx = x+dx[i]
+            ny = y+dy[i]
+            if 0 <= nx < n and 0 <= ny < m:
+                if wvisited[nx][ny] == 0:
+                    if lake[nx][ny] == 'X':
+                        wqtemp.append([nx,ny])
+                    else:
+                        wq.append([nx,ny])
+                    wvisited[nx][ny] = 1
+
+
+while True:
+    melt()
+    if bfs():
+        print(count)
+        break
+    q,wq = qtemp, wqtemp
+    qtemp,wqtemp = deque(),deque()
     count += 1
-
-print(count)
