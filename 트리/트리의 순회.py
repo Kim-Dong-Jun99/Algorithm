@@ -6,28 +6,25 @@ n = int(sys.stdin.readline())
 inorder = list(map(int, sys.stdin.readline().split()))
 postorder = list(map(int, sys.stdin.readline().split()))
 
+table = {}
+for i in range(n):
+    table[inorder[i]] = i
+
 
 # head = postorder[-1]
 
-def getindex(left, right, v):
-    for i in range(left, right + 1):
-        if inorder[i] == v:
-            return i
 
-
-result = []
-
-
+# result = []
 def getfulltree(start, end, left, right):
     if left == right:
-        result.append(postorder[end])
-        # print(postorder[end])
+        # result.append(postorder[end])
+        print(postorder[end])
 
     else:
-        result.append(postorder[end])
-        # print(postorder[end])
+        # result.append(postorder[end])
+        print(postorder[end])
 
-        headindex = getindex(left, right, postorder[end])
+        headindex = table[postorder[end]]
 
         ln = headindex - left
         rn = right - headindex
@@ -38,6 +35,8 @@ def getfulltree(start, end, left, right):
 
 
 getfulltree(0, n - 1, 0, n - 1)
-print(*result)
+
+
+
 
 
