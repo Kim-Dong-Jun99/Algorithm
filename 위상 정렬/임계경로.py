@@ -1,50 +1,48 @@
+#임계경로
+#https://www.acmicpc.net/problem/1948
 import sys
 from collections import deque
-
-n = int(sys.stdin.readline())
-m = int(sys.stdin.readline())
-
-graph = [[] for _ in range(n + 1)]
-indegree = [0 for _ in range(n + 1)]
-
+sys.stdin = open("input.txt","r")
+n=int(input()) #노드, 도시 개수
+m=int(input()) #도로의 개수
+graph=[[]*(n+1) for _ in range(n+1)]
+back_graph=[[]*(n+1) for _ in range(n+1)]
+indegree=[0]*(n+1) #진입차수
+result=[0]*(n+1)
+check=[0]*(n+1)
+q=deque()
 for _ in range(m):
-    q = list(map(int, sys.stdin.readline().split()))
-    graph[q[0]].append([q[1], q[2]])
-    indegree[q[1]] += 1
-
-start, end = map(int, sys.stdin.readline().split())
-
-maxtime = [0] * (n + 1)
-# roadcount = [0] * (n+1)
-roadcount = [[] for i in range(n + 1)]
-q = deque()
-
-for i in range(1, n + 1):
-    if indegree[i] == 0:
-        q.append(i)
-
-while q:
-    temp = q.popleft()
-    if temp != start:
-        for i in graph[temp]:
-            indegree[i[0]] -= 1
-            if indegree[i[0]] == 0:
-                q.append(i[0])
+    a,b,t=map(int,input().split())
+    graph[a].append((b,t))
+    back_graph[b].append((a,t))
+    indegree[b]+=1
+start,end=map(int,input().split())
 
 q.append(start)
-while q:
-    temp = q.popleft()
-    for i in graph[temp]:
-        indegree[i[0]] -= 1
-        if maxtime[temp] + i[1] > maxtime[i[0]]:
-            maxtime[i[0]] = maxtime[temp] + i[1]
-            # roadcount[i[0]] = roadcount[temp] + 1
 
-        elif maxtime[temp] + i[1] == maxtime[i[0]]:
+def topologysort():
+    while q:
+        cur=q.popleft()
+        for i,t in graph[cur]:
+            indegree[i]-=1
+            result[i]=max(result[i],result[cur]+t)
+            if indegree[i]==0:
+                q.append(i)
 
-        if indegree[i[0]] == 0:
-            q.append(i[0])
-# 중복을 어떻게 찾고 제거할 것인가
-print(maxtime[end])
-print(roadcount[end])
+    #백트래킹
+    cnt=0 #임계경로에 속한 모든 정점의 개수
+    q.append(end)
+    while q: #도착점에서 시작점으로
+        cur=q.popleft()
+        for i,t in back_graph[cur]:
+            #도착점까지의 비용에서 시작점의 비용을 뺐을 때 그 간선비용과 같다면
+            if result[cur]-result[i]==t:
+                cnt+=1
+                if check[i]==0: #큐에 한번씩만 담을 수 있도록,중복방문제거 
+                    q.append(i)
+                    check[i]=1
 
+    print(result[end])
+    print(cnt)
+
+topologysort()
