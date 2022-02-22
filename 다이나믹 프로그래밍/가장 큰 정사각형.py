@@ -5,8 +5,15 @@ rec = [sys.stdin.readline().strip() for _ in range(n)]
 
 
 dp = [[0 for _ in range(m)] for _ in range(n)]
-
-
+check = True
+for i in range(n):
+    for j in range(m):
+        if rec[i][j] == '1':
+            check = False
+            break
+if check:
+    print(0)
+    sys.exit()
 for i in range(m):
     if rec[0][i] == '1':
         dp[0][i] = 1
@@ -30,4 +37,3 @@ for i in range(1, n):
         curmax += 1
 
 print(curmax ** 2)
-
