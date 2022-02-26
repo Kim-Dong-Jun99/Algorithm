@@ -1,27 +1,28 @@
 import sys
-n = int(sys.stdin.readline())
-ns = [sys.stdin.readline().strip() for _ in range(n)]
+input = sys.stdin.readline
 
-dp = [sys.maxsize for _ in range(2**n)]
-dp[1] = 0
+def solution(n, arr):
+    M = [[[0] * 10 for j in range(1 << n)] for i in range(n)]
 
+    def dfs(artist, path, price):
+        if M[artist][path][price] != 0:
+            return M[artist][path][price]
 
-def sol(s, cur):
+        count = 0
+        for nextA in range(1, n):
+            if arr[artist][nextA] < price or path & (1 << nextA) > 0:
+                continue
+            count = max(count, 1 + dfs(nextA, path | (1 << nextA), arr[artist][nextA]))
+        M[artist][path][price] = count
+
+        return count
+
+    return 1 + dfs(0, 1, 0)
+
+if __name__ == '__main__':
+    n = int(input())
+    arr = []
     for i in range(n):
-        if s & (1 << i) != (1 << i) and dp[s] <= int(ns[cur][i]):
-            dp[s | (1 << i)] = int(ns[cur][i])
-            sol(s | (1 << i), i)
-
-
-sol(1, 0)
-result = 0
-for i in range(2**n):
-    if dp[i] != sys.maxsize:
-        temp = 0
-        for j in range(n):
-            if i & (1 << j) == (1 << j):
-                temp += 1
-        if temp > result:
-            result = temp
-# print(dp)
-print(result)
+        arr.append([int(j) for j in input().strip()])
+    result = solution(n, arr)
+    print(result)
