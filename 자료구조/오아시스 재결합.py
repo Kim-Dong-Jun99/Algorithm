@@ -1,17 +1,27 @@
 import sys
-n = int(sys.stdin.readline())
-result = 0
+HEIGHT, CNT = 0, 1
+N = int(sys.stdin.readline())
+arr = [int(sys.stdin.readline()) for _ in range(N)]
 stack = []
-for i in range(n):
-    stack.append(int(sys.stdin.readline()))
-    if i >= 1:
-        cur = stack[-1]
-        tallest = stack[-2]
-        for j in range(len(stack)-2, -1, -1):
-            if stack[j] >= tallest:
-                result += 1
-                tallest = stack[j]
-            # else:
-            #     break
+answer = 0
+for h in arr:
+    while stack and stack[-1][HEIGHT] < h:
+        answer += stack.pop()[CNT]
+    if not stack:
+        stack.append((h, 1))
+        continue
 
-print(result)
+    if stack[-1][HEIGHT] == h:
+        cnt = stack.pop()[CNT]
+        answer += cnt
+        if stack:
+            answer += 1
+
+        stack.append((h, cnt + 1))
+
+    else:
+        stack.append((h, 1))
+        answer += 1
+
+
+print(answer)
