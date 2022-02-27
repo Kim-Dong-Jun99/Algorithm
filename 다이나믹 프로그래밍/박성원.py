@@ -48,81 +48,43 @@
 # temp2 = time.time()-start
 # print(temp1//temp2)
 
-import sys
-from math import gcd
-n = int(sys.stdin.readline())
-ns = [int(sys.stdin.readline()) for _ in range(n)]
-k = int(sys.stdin.readline())
-slen = [0 for _ in range(n)]
-tl = 0
-for i in range(n):
-    temp = len(str(ns[i]))
-    tl += temp
-    slen[i] = temp
+import sys, math
+input = sys.stdin.readline
 
-# dp 구조는 확정
-# dp = [[[0]*k for _ in range(2**n)] for _ in range(n)]
-# for i in range(n):
-#     d = ns[i]*(10**(tl-slen[i]))
-#     dp[0][1 << i][d % k] += 1
-#
-# for i in range(n-1):
-#     for j in range(2**n):
-#         for l in range(k):
-#             if dp[i][j][l] != 0:
-#                 temps = 0
-#                 for m in range(n):
-#                     if j & (1 << m) == (1 << m):
-#                         temps += slen[m]
-#                 for m in range(n):
-#                     if j & (1 << m) != (1 << m):
-#                         d = ns[m]*(10**(tl - temps - slen[m]))
-#                         dp[i+1][j | (1 << m)][(l+d) % k] += dp[i][j][l]
-# # print(dp[-1][-1])
-# total = sum(dp[-1][-1])
-# r = dp[-1][-1][0]
-# g = gcd(r, total)
-# left = r // g
-# right = total // g
-# print('%d/%d'%(left,right))
+def solution(mod,bit):
+    if bit == (1 << n) - 1:
+        if mod == 0:
+            return 1
+        return 0
+    if dp[mod][bit] != -1:
+        return dp[mod][bit]
+    temp = 0
+    for j in range(n):
+        if not bit & (1 << j):
+            new_mod = ((mod * mod_10[arr_length[j]]) % k + arr[j]) % k
+            temp += solution(new_mod, bit | 1 << j)
+    dp[mod][bit] = temp
+    return dp[mod][bit]
 
-dp = [[[] for _ in range(2**n)] for _ in range(n)]
-for i in range(n):
-    d = ns[i]*(10**(tl-slen[i]))
-    # dp[0][1 << i][d % k].append(1)
-    dp[0][1 << i].append(d)
-for i in range(n-1):
-    for j in range(2**n):
-        # for l in range(k):
-        #     if dp[i][j][l] != 0:
-        #         temps = 0
-        #         for m in range(n):
-        #             if j & (1 << m) == (1 << m):
-        #                 temps += slen[m]
-        #         for m in range(n):
-        #             if j & (1 << m) != (1 << m):
-        #                 d = ns[m]*(10**(tl - temps - slen[m]))
-        #                 dp[i+1][j | (1 << m)][(l+d) % k] += dp[i][j][l]
-        if dp[i][j]:
-            for l in dp[i][j]:
-                temps = 0
-                for m in range(n):
-                    if j & (1 << m) == (1 << m):
-                        temps += slen[m]
-                for m in range(n):
-                    if j & (1 << m) != (1 << m):
-                        d = ns[m]*(10**(tl - temps - slen[m]))
-                        dp[i+1][j | (1 << m)].append((l+d) % k)
-# print(dp[-1][-1])
-# total = sum(dp[-1][-1])
-# r = dp[-1][-1][0]
-# g = gcd(r, total)
-# left = r // g
-# right = total // g
-# print('%d/%d'%(left,right))
-total = len(dp[-1][-1])
-r = dp[-1][-1].count(0)
-g = gcd(r, total)
-left = r // g
-right = total // g
-print('%d/%d'%(left, right))
+n = int(input())
+arr = [int(input()) for _ in range(n)]
+k = int(input())
+arr_length = [len(str(i)) for i in arr]
+arr = [i % k for i in arr]
+
+mod_10 = [1]
+for i in range(50):
+    mod_10.append((mod_10[-1]*10) % k)
+
+dp = [[-1]*(1 << n) for _ in range(k)]
+answer = solution(0,0)
+
+if answer == 0:
+    print('0/1')
+else:
+    fact = math.factorial(n)
+    if answer == fact or k == 1:
+        print('1/1')
+    else:
+        mod = math.gcd(answer, fact)
+        print('{}/{}'.format(answer//mod, fact//mod))
