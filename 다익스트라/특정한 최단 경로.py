@@ -49,4 +49,4 @@ result = min(ld[r] + sd[l] + rd[n], ld[r]+sd[r]+ld[n])
 if result >= sys.maxsize:
     print(-1)
 else:
-    print(result)ㅌ
+    print(result)
