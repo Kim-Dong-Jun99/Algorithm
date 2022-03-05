@@ -1,28 +1,32 @@
 import sys
-from collections import deque
+import heapq
 
 n = int(sys.stdin.readline())
-ns = [list(map(int, sys.stdin.readline().split())) for _ in range(n)]
+road_info = []
+for _ in range(n):
+    road = list(map(int, sys.stdin.readline().split()))
+    road_info.append(road)
+
 d = int(sys.stdin.readline())
-for i in range(n):
-    if ns[i][0] > ns[i][1]:
-        ns[i][0], ns[i][1] = ns[i][1], ns[i][0]
-ns.sort()
-heap = deque()
-index = 0
-result = 0
-# print(ns)
-for i in range(n):
-    temp = ns[i]
-    if index < i:
-        index = i+1
-    while index < n and ns[index][1] <= temp[0] + d and temp[0] + d >= temp[1]:
-        heap.append(index)
-        index += 1
-    if result < len(heap):
-        result = len(heap)
-    while heap and heap[0] < i:
-        heap.popleft()
+roads = []
+for road in road_info:
+    house, office = road
+    if abs(house - office) <= d:
+        road = sorted(road)
+        roads.append(road)
+roads.sort(key=lambda x:x[1])
 
+answer = 0
+heap = []
+for road in roads:
+    if not heap:
+        heapq.heappush(heap, road)
+    else:
+        while heap[0][0] < road[1] - d:
+            heapq.heappop(heap)
+            if not heap:
+                break
+        heapq.heappush(heap, road)
+    answer = max(answer, len(heap))
 
-print(result)
+print(answer)
