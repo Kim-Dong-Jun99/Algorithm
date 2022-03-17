@@ -1,6 +1,6 @@
 import sys
 
-
+# test
 def find(x):
     if x == parent[x]:
         return parent[x]
