@@ -1,29 +1,27 @@
+import math
 import sys
 
-tc = int(sys.stdin.readline())
-
-
-def isPrime(n):
-    if n == 1:
-        return False
-    for i in range(2, int(n ** 0.5) + 1):
-        if n % i == 0:
+def is_prime(m):
+    right = int(math.sqrt(m))
+    for i in range(2,right+1):
+        if m % i == 0:
             return False
+
     return True
 
 
-for _ in range(tc):
+while True:
     n = int(sys.stdin.readline())
-
-    mid = int(n / 2)
-    if isPrime(mid):
-        print('%d %d' % (mid, mid))
-    else:
-        compare = mid - 1
-        while compare > 1:
-            if isPrime(compare):
-                if isPrime(n - compare):
-                    print('%d %d' % (compare, n - compare))
+    result = True
+    if n == 0:
+        break
+    for a in range(3, int(n/2)+1):
+        if a % 2 == 1:
+            if is_prime(a):
+                if is_prime(n-a):
+                    print("%d = %d + %d"%(n,a,n-a))
+                    result = False
                     break
-            compare -= 1
 
+    if result:
+        print("Goldbach's conjecture is wrong.")
