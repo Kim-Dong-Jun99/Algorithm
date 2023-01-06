@@ -1,72 +1,44 @@
 import sys
+from collections import defaultdict
+import heapq
 
-n = int(sys.stdin.readline())
-
-
-class node():
-    def __init__(self, data):
-        self.data = data
-        self.child = {}
-        self.edgevalue = {}
-        self.parent = None
-        self.maxValue = 0
+result = 0
 
 
-class Tree():
-    def __init__(self, n):
-        self.head = node(1)
-        self.table = {1: self.head}
-        self.visited = [0 for i in range(n + 1)]
+def dfs(i):
+    curmax = 0
+    childs = []
+    for neighbor in tree[i]:
+        if visited[neighbor] == 0:
+            visited[neighbor] = 1
+            neighbor_ = dfs(neighbor) + tree[i][neighbor]
+            heapq.heappush(childs, -1 * (neighbor_))
+            curmax = bigger(curmax, neighbor_)
+    if len(childs) > 1:
+        tempResult = (heapq.heappop(childs) + heapq.heappop(childs)) * -1
+        global result
+        result = bigger(tempResult, result)
 
-    def insert(self, parent, childdata, weight):
-        parentnode = self.table[parent]
-        childnode = node(childdata)
-        childnode.parent = parentnode
-        parentnode.child[childdata] = childnode
-        parentnode.edgevalue[childdata] = weight
-        self.table[childdata] = childnode
-
-    def dfs(self):
-        maxV = -1
-        cur = self.table[1]
-        self.visited[1] = 1
-        stack = []
-        while True:
-            f = False
-            for i in list(cur.child.keys()):
-                if self.visited[i] == 0:
-                    stack.append(cur)
-                    self.visited[i] = 1
-                    cur = cur.child[i]
-                    f = True
-                    break
-            if f == False:
-                tempMax = 0
-                secondMax = 0
-                for i in list(cur.child.keys()):
-                    child = cur.child[i]
-                    tempS = cur.edgevalue[i] + child.maxValue
-                    if tempS >= tempMax:
-                        secondMax = tempMax
-                        tempMax = tempS
-                    elif tempS > secondMax:
-                        secondMax = tempS
-                if tempMax + secondMax > maxV:
-                    maxV = tempMax + secondMax
-                cur.maxValue = tempMax
-                if stack == []:
-                    break
-                cur = stack.pop()
-        return maxV
+    return curmax
 
 
-tree = Tree(n)
-for i in range(n - 1):
-    query = list(map(int, sys.stdin.readline().split()))
-    tree.insert(query[0], query[1], query[2])
-print(tree.dfs())
+def bigger(i, j):
+    if i > j:
+        return i
+    return j
 
 
+V = int(sys.stdin.readline())
+tree = defaultdict(dict)
+visited = defaultdict(int)
+for _ in range(V):
+    node = list(map(int, sys.stdin.readline().split()))
+    for index in range(1, len(node), 2):
+        if node[index] != -1:
+            tree[node[0]][node[index]] = node[index + 1]
 
+visited[1] = 1
+dfs_result = dfs(1)
+result = bigger(dfs_result, result)
 
-
+print(result)
