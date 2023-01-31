@@ -36,10 +36,10 @@ for start, end in flowers:
 		if end > next_flower[1]:
 			next_flower[0] = start
 			next_flower[1] = end
-		if next_flower[1] >= end_date:
-			done = True
-			result += 1
-			break
+	if next_flower[1] >= end_date:
+		done = True
+		result += 1
+		break
 	if cur_flower[1] >= end_date:
 		done = True
 		break
