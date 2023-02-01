@@ -1,52 +1,61 @@
 import sys
+from collections import defaultdict
 
-m, n = map(int, sys.stdin.readline().split())
-tomatoes = [list(map(int, sys.stdin.readline().split())) for i in range(n)]
-nextV = []
-day = 0
-for i in range(n):
-    for j in range(m):
-        if tomatoes[i][j] == 1:
-            nextV.append([i, j])
-
-
-def ps(tomatoes, i, j):
-    result = []
-    if i - 1 > -1:
-        if tomatoes[i - 1][j] == 0:
-            result.append([i - 1, j])
-    if i + 1 < len(tomatoes):
-        if tomatoes[i + 1][j] == 0:
-            result.append([i + 1, j])
-    if j - 1 > -1:
-        if tomatoes[i][j - 1] == 0:
-            result.append([i, j - 1])
-    if j + 1 < len(tomatoes[0]):
-        if tomatoes[i][j + 1] == 0:
-            result.append([i, j + 1])
-    return result
-
-
-while True:
+def can_go(i, j, k):
     temp = []
-    for i in nextV:
-        for j in ps(tomatoes, i[0], i[1]):
-            temp.append(j[:])
-            tomatoes[j[0]][j[1]] = 1
-    nextV = temp
-    if nextV == []:
-        break
-    day += 1
+    if i - 1 >= 0 and tomatoes[i-1][j][k] == 0:
+        temp.append([i-1, j, k])
+    if i + 1 < H and tomatoes[i+1][j][k] == 0:
+        temp.append([i+1, j, k])
+    if j - 1 >= 0 and tomatoes[i][j-1][k] == 0:
+        temp.append([i, j-1, k])
+    if j + 1 < N and tomatoes[i][j+1][k] == 0:
+        temp.append([i, j+1, k])
+    if k - 1 >= 0 and tomatoes[i][j][k-1] == 0:
+        temp.append([i, j, k-1])
+    if k + 1 < M and tomatoes[i][j][k+1] == 0:
+        temp.append([i, j, k+1])
+    return temp
+        
 
-check = True
-for i in range(n):
-    for j in range(m):
-        if tomatoes[i][j] == 0:
-            check = False
-            break
-    if check == False:
+M, N, H = map(int, sys.stdin.readline().split())
+# visited = []
+next_node = []
+# tomatoes[0][0][1] - 0 번째 층 0번째 줄 1번째 칸
+tomatoes = []
+non_ripe = 0
+for i in range(H):
+    floor = []
+    for j in range(N):
+        floor.append(list(map(int, sys.stdin.readline().split())))
+        for k in range(M):
+            if floor[j][k] == 1:
+#                 visited[i][j][k] = 1
+                next_node.append([i, j, k])
+            elif floor[j][k] == 0:
+                non_ripe += 1
+                
+    tomatoes.append(floor)
+    
+if non_ripe == 0:
+    print(0)
+    sys.exit()
+    
+result = 0
+while next_node:
+    result += 1
+    temp = []
+    for i, j, k in next_node:
+        for i_, j_, k_ in can_go(i, j, k):
+            temp.append([i_, j_, k_])
+            tomatoes[i_][j_][k_] = 1
+            non_ripe -= 1
+    next_node = temp
+    if non_ripe == 0:
         break
-if check:
-    print(day)
+        
+    
+if non_ripe == 0:
+    print(result)
 else:
     print(-1)
