@@ -27,20 +27,21 @@ def can_go_wall(i, j):
 
 
 N, M = map(int, sys.stdin.readline().split())
-
+if N == 1 and M == 1:
+	print(1)
+	sys.exit()
 graph = [sys.stdin.readline().rstrip() for _ in range(N)]
 
 visited = [[0 for _ in range(M)] for _ in range(N)]
 wall_visited = [[0 for _ in range(M)] for _ in range(N)]
 
 visited[0][0] = 1
+wall_visited[0][0] = 1
 
 go = [[0,0]]
 crashed = []
 result = 1
 while go or crashed:
-# 	print("go : %s"%go)
-# 	print("crashed : %s"%crashed)
 	result += 1
 	temp = []
 	temp_ = []
@@ -48,6 +49,7 @@ while go or crashed:
 		for k, l in can_go(i, j):
 			visited[k][l] = 1
 			if graph[k][l] == '1':
+				wall_visited[k][l] = 1
 				temp_.append([k, l])
 			else:
 				temp.append([k, l])
