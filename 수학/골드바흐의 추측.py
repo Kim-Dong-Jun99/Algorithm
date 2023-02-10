@@ -19,9 +19,10 @@ while True:
         if a % 2 == 1:
             if is_prime(a):
                 if is_prime(n-a):
-                    print("%d = %d + %d"%(n,a,n-a))
+                    sys.stdout.write("%d = %d + %d"%(n,a,n-a))
+                    sys.stdout.write("\n")
                     result = False
                     break
 
     if result:
-        print("Goldbach's conjecture is wrong.")
+        sys.stdout.write("Goldbach's conjecture is wrong.\n")
