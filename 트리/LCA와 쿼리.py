@@ -43,30 +43,17 @@ def lca_2(u, v):
 def lca(r, u, v):
     lca = lca_2(u, v)
     lca_r = lca_2(lca, r)
-    if r == lca:
-        return lca
     if lca_r != lca:
         return lca
     else:
         lca_u = lca_2(u, r)
-        if lca_u == u and u != lca:
-            return u
-        elif lca_u == r:
-            return r
-        elif lca_u == lca:
-            lca_v = lca_2(v, r)
-            if lca_v == v and v != lca:
-                return v
-            elif lca_v == r:
-                return r
-            elif lca_v == lca:
-                return lca
-
-    # TODO lca, u, v 랑 각각 R이랑 LCA 구하면 될지도? 뭔가 될 것 같은 스멜이 남
-    # if r == 1:
-    #     return lca
-    # elif depth[r] <= depth[lca]:
-    #     return lca
+        lca_v = lca_2(v, r)
+        if lca_u == lca and lca_v == lca:
+            return lca
+        elif lca_u == lca and lca_v != lca:
+            return lca_v
+        elif lca_u != lca and lca_v == lca:
+            return lca_u
 
 
 N = int(sys.stdin.readline())
