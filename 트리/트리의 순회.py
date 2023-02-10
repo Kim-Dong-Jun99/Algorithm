@@ -11,32 +11,21 @@ for i in range(n):
     table[inorder[i]] = i
 
 
-# head = postorder[-1]
-
-
-# result = []
-def getfulltree(start, end, left, right):
+def get_full_tree(start, end, left, right):
     if left == right:
-        # result.append(postorder[end])
         print(postorder[end])
 
     else:
-        # result.append(postorder[end])
         print(postorder[end])
 
-        headindex = table[postorder[end]]
+        head_index = table[postorder[end]]
 
-        ln = headindex - left
-        rn = right - headindex
+        ln = head_index - left
+        rn = right - head_index
         if start <= start + ln - 1:
-            getfulltree(start, start + ln - 1, left, headindex - 1)
+            get_full_tree(start, start + ln - 1, left, head_index - 1)
         if end - rn <= end - 1:
-            getfulltree(end - rn, end - 1, headindex + 1, right)
+            get_full_tree(end - rn, end - 1, head_index + 1, right)
 
 
-getfulltree(0, n - 1, 0, n - 1)
-
-
-
-
-
+get_full_tree(0, n - 1, 0, n - 1)
