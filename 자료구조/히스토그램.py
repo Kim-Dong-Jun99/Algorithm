@@ -1,4 +1,7 @@
 import sys
+from collections import deque
+
+sys.setrecursionlimit(1000000)
 
 
 class Node:
@@ -13,14 +16,21 @@ def get_middle(left, right):
 
 
 def smaller(i, j):
-    if i < j:
+    if recs[i] < recs[j]:
         return i
     return j
 
 
+def bigger(i, j):
+    if i < j:
+        return j
+    return i
+
+
+# 구간 내 최소 값 인덱스를 저장하는 세그먼트 트리 생성
 def create_segment_tree(left, right):
     if left == right:
-        return Node(None, None, recs[left])
+        return Node(None, None, left)
     else:
         middle = get_middle(left, right)
         left_child = create_segment_tree(left, middle)
@@ -29,62 +39,26 @@ def create_segment_tree(left, right):
         return Node(left_child, right_child, value)
 
 
-def get_max_length_left(node, left, right, index, value):
-    if index < left:
-        return 0
-    if left == right:
-        if node.value >= value:
-            return 1
-        else:
-            return 0
-    else:
-        if node.value >= value:
-            if right < index:
-                return right - left + 1
-            else:
-                return index - left + 1
-        else:
-            middle = get_middle(left, right)
-            if index <= middle:
-                left_v = get_max_length_left(node.left_child, left, middle, index, value)
-                return left_v
+def search_min_index(node, left, right, left_limit, right_limit):
+    # print("search left : right = %d %d"%(left, right))
 
-            else:
-                right_v = get_max_length_left(node.right_child, middle + 1, right, index, value)
-                if right_v == index - middle:
-                    left_v = get_max_length_left(node.left_child, left, middle, index, value)
-                    return left_v + right_v
-                else:
-                    return right_v
-
-
-def get_max_length_right(node, left, right, index, value):
-    if right < index:
-        return 0
-
-    if left == right:
-        if node.value >= value:
-            return 1
-        else:
-            return 0
-    else:
-        if node.value >= value:
-            if index < left:
-                return right - left + 1
-            else:
-                return right - index + 1
-        else:
-            middle = get_middle(left, right)
-            if middle < index:
-                right_v = get_max_length_right(node.right_child, middle + 1, right, index, value)
-                return right_v
-            else:
-                left_v = get_max_length_right(node.left_child, left, middle, index, value)
-                if left_v == middle - index + 1:
-                    right_v = get_max_length_right(node.right_child, middle + 1, right, index, value)
-                    return right_v + left_v
-                else:
-                    return left_v
+    if right < left_limit:
+        return -1
+    if right_limit < left:
+        return -1
+    if left_limit <= left and right <= right_limit:
+        return node.value
+    middle = get_middle(left, right)
+    left_v = search_min_index(node.left_child, left, middle, left_limit, right_limit)
+    right_v = search_min_index(node.right_child, middle + 1, right, left_limit, right_limit)
+    # print("search left %d, right %d = left_v, right_v : %d %d"%(left, right, left_v, right_v))
+    if left_v == -1:
+        return right_v
+    if right_v == -1:
+        return left_v
+    if recs[left_v] < recs[right_v]:
+        return left_v
+    return right_v
 
 
 N = int(sys.stdin.readline())
@@ -92,13 +66,16 @@ recs = [int(sys.stdin.readline()) for _ in range(N)]
 
 root = create_segment_tree(0, N - 1)
 result = 0
-for i in range(N):
+q = deque([(0, N - 1)])
+while q:
+    left, right = q.popleft()
+    min_index = search_min_index(root, 0, N - 1, left, right)
+    temp_result = recs[min_index] * (right - left + 1)
+    result = bigger(result, temp_result)
 
-    right_length = get_max_length_right(root, 0, N - 1, i, recs[i])
-    left_length = get_max_length_left(root, 0, N - 1, i, recs[i])
-    length = right_length + left_length - 1
-    # print("%d : %d : %d : %d" % (i, recs[i], right_length, left_length))
+    if left <= min_index - 1:
+        q.append((left, min_index - 1))
+    if min_index + 1 <= right:
+        q.append((min_index + 1, right))
 
-    if result < length * recs[i]:
-        result = length * recs[i]
 print(result)

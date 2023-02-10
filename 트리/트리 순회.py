@@ -16,33 +16,33 @@ class Tree():
         self.storage[data] = newNode
         parent = self.storage[pdata]
         if dir == 0:
-            parent.leftChild = newNode
+            parent.left_child = newNode
         else:
-            parent.rightChild = newNode
+            parent.right_child = newNode
         newNode.parent = parent
 
 
 def preorder(node):
     print(node.data, end='')
-    if node.leftChild:
-        preorder(node.leftChild)
-    if node.rightChild:
-        preorder(node.rightChild)
+    if node.left_child:
+        preorder(node.left_child)
+    if node.right_child:
+        preorder(node.right_child)
 
 
 def inorder(node):
-    if node.leftChild:
-        inorder(node.leftChild)
+    if node.left_child:
+        inorder(node.left_child)
     print(node.data, end='')
-    if node.rightChild:
-        inorder(node.rightChild)
+    if node.right_child:
+        inorder(node.right_child)
 
 
 def postorder(node):
-    if node.leftChild:
-        postorder(node.leftChild)
-    if node.rightChild:
-        postorder(node.rightChild)
+    if node.left_child:
+        postorder(node.left_child)
+    if node.right_child:
+        postorder(node.right_child)
     print(node.data, end='')
 
 
