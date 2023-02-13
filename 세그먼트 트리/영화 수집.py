@@ -96,3 +96,38 @@ for _ in range(T):
     print()
 
 
+# import sys
+# input = sys.stdin.readline
+# TC = int(input())
+#
+#
+# def get(i):
+#     a = 0
+#     while i:
+#         a += T[i]
+#         i -= i & -i
+#     return a
+#
+#
+# def update(i, x):
+#     while i <= N + M:
+#         T[i] += x
+#         i += i & -i
+#
+#
+# for _ in range(TC):
+#     N, M = map(int, input().split())
+#     T = [0] * (M + N + 2)
+#     P = [0] * M
+#     b = list(range(M, M + N + 1))
+#     for j in range(M + 1, M + N + 1):
+#         update(j, 1)
+#     i, j = 0, M
+#     for m in map(int, input().split()):
+#         P[i] = get(b[m] - 1)
+#         update(b[m], -1)
+#         b[m] = j
+#         update(j, 1)
+#         i, j = i+1, j-1
+#
+#     print(" ".join(map(str, P)))
