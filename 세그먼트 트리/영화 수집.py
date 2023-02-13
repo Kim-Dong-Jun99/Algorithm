@@ -16,48 +16,83 @@ def get_middle(left, right):
 
 def create_segment_tree(left, right):
     if left == right:
-        # value에는 dvd 번호가 들어감
-        return Node(None, None, left)
+        return Node(None, None, {movies[left]})
     else:
         middle = get_middle(left, right)
         left_node = create_segment_tree(left, middle)
         right_node = create_segment_tree(middle + 1, right)
-        # 더 위에 있는 dvd 번호를 저장
-        if dvds[left_node.value] < dvds[right_node.value]:
-            value = left_node.value
-        else:
-            value = right_node.value
+        value = left_node.value | right_node.value
         return Node(left_node, right_node, value)
 
 
-def update(node, left, right, index):
-    # 구간 최소값이 인덱스보다 적으면 실행 될 이유 없음!
-    if dvds[node.value] >= index:
-        return
+def find_rank(node, left, right, left_limit, right_limit):
+    if left > right_limit:
+        return set()
+    if right < left_limit:
+        return set()
+    if left_limit < left and right < right_limit:
+        return node.value
+    if left != right:
+        middle = get_middle(left, right)
+        return find_rank(node.leftChild, left, middle, left_limit, right_limit) | find_rank(node.rightChild, middle + 1,
+                                                                                            right, left_limit,
+                                                                                            right_limit)
+    else:
+        return set()
+
+
+def create_segment_tree_for_init(left, right):
     if left == right:
-        dvds[node.value] += 1
-        return
+        return Node(None, None, 0)
+    else:
+        middle = get_middle(left, right)
+        left_v = create_segment_tree_for_init(left, middle)
+        right_v = create_segment_tree_for_init(middle + 1, right)
+        return Node(left_v, right_v, 0)
+
+
+def sub_sum(node, left, right, left_limit, right_limit):
+    if left_limit > right:
+        return 0
+    if right_limit < left:
+        return 0
+    if left_limit <= left and right <= right_limit:
+        return node.value
     middle = get_middle(left, right)
-    update(node.leftChild, left, middle, index)
-    update(node.rightChild, middle + 1, right, index)
+    return sub_sum(node.leftChild, left, middle, left_limit, right_limit) + sub_sum(node.rightChild, middle + 1, right,
+                                                                                    left_limit, right_limit)
 
 
+def update_init(node, left, right, index_):
+    if left > index_:
+        return
+    if right < index_:
+        return
+    node.value += 1
 
+    if left != right:
+        middle = get_middle(left, right)
+        update_init(node.leftChild, left, middle, index_)
+        update_init(node.rightChild, middle + 1, right, index_)
 
 
 for _ in range(T):
     N, M = map(int, sys.stdin.readline().split())
     movies = list(map(int, sys.stdin.readline().split()))
-    # i 번 dvd 위에 몇개의 dvd가 있는지를 저장하는 리스트
-    dvds = [i - 1 for i in range(N+1)]
-    dvds[0] = sys.maxsize
-    root = create_segment_tree(1, N)
-    for j in movies:
-        sys.stdout.write(str(dvds[j])+" ")
+    visited = [-1] * (N + 1)
+    for_init = create_segment_tree_for_init(1, N)
 
-        # j번째 높이보다 낮으면 +1
-        update(root, 1, N, dvds[j])
-        # print(dvds)
-        dvds[j] = 0
-
+    # print(visited)
+    root = create_segment_tree(0, M - 1)
+    index = 0
+    for i in movies:
+        if visited[i] == -1:
+            sys.stdout.write(str(sub_sum(for_init, 1, N, i, N) + i - 1) + " ")
+            update_init(for_init, 1, N, i)
+        else:
+            sys.stdout.write(str(len(find_rank(root, 0, M - 1, visited[i], index))) + " ")
+        visited[i] = index
+        index += 1
     print()
+
+
