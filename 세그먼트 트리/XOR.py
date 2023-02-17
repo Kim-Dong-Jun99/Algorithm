@@ -2,8 +2,6 @@ import sys
 import math
 import operator
 
-# sys.setrecursionlimit(1000000)
-
 
 def smaller(i, j):
     if operator.lt(i, j):
@@ -31,19 +29,6 @@ def propagate(index, left, right):
             right_c = index * 2 + 2
             lazy[right_c] = operator.xor(lazy[right_c], lazy[index])
         lazy[index] = 0
-
-
-# def create_segment_tree(index, left, right):
-#     if operator.eq(left, right):
-#         tree[index] = numbers[left]
-#
-#     else:
-#         middle = get_middle(left, right)
-#         left_c = operator.add(operator.mul(index, 2), 1)
-#         right_c = operator.add(operator.mul(index, 2), 2)
-#
-#         tree[index] = operator.xor(create_segment_tree(left_c, left, middle), create_segment_tree(right_c, middle + 1, right))
-#     return tree[index]
 
 
 def query(index, left, right, left_limit, right_limit):
@@ -79,7 +64,7 @@ def update(index, left, right, left_limit, right_limit, k):
     right_c = operator.add(operator.mul(index, 2), 2)
     update(left_c, left, middle, left_limit, right_limit, k)
     update(right_c, operator.add(middle, 1), right, left_limit, right_limit, k)
-    tree[index] = tree[index*2]
+    tree[index] = tree[index * 2]
     if index * 2 + 2 < node_num:
         tree[index] = tree[index * 2 + 1] ^ tree[index * 2 + 2]
 
@@ -96,7 +81,6 @@ else:
 numbers = list(map(int, sys.stdin.readline().split()))
 tree = [0] * node_num
 lazy = [0] * node_num
-# create_segment_tree(0, 0, N - 1)
 for i_ in range(N):
     update(0, 0, N - 1, i_, i_, numbers[i_])
 M = int(sys.stdin.readline())
@@ -108,3 +92,4 @@ for _ in range(M):
         update(0, 0, N - 1, q[1], q[2], q[3])
     else:
         sys.stdout.write(str(query(0, 0, N - 1, q[1], q[2])) + "\n")
+
