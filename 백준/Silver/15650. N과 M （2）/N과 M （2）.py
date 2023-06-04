@@ -1,10 +1,17 @@
 import sys
-from itertools import combinations
-n, m = map(int, sys.stdin.readline().split())
-nums = [i for i in range(1,n+1)]
-combi = list(combinations(nums, m))
-for i in combi:
-    for j in i:
-        sys.stdout.write("%d "% j)
-    sys.stdout.write("\n")
+n,m=map(int, sys.stdin.readline().split())
+s=[]
+def backtrack(index):
+    global m
+    global n
+    if len(s) == m:
+        to_print=' '.join(map(str,s))
+        sys.stdout.write("%s\n"%to_print)
+        return
+    for i in range(index, n+1):
+        s.append(i)
+        backtrack(i+1)
+        s.pop()
     
+    
+backtrack(1)
