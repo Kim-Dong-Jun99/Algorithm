@@ -21,6 +21,4 @@ def solution(scores):
     for i in rank:
         if i > sum_wanho:
             answer += rank[i]
-                
-    
     return answer + 1
