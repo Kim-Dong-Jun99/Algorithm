@@ -1,7 +1,4 @@
 def solution(commands):
-    """
-    17:06
-    """
     dict = {}
     value_dict = {}
     answer = []
@@ -50,8 +47,6 @@ def solution(commands):
             c = int(command_list[2])
             drc = find((r,c), dict)
             answer.append(value_dict[drc])
-            
-    
     
     return answer
 
