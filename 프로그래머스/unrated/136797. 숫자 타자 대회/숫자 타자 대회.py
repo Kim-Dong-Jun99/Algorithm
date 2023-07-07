@@ -1,19 +1,15 @@
 import sys
 from collections import defaultdict
 def solution(numbers):
-    
     grid = {
         "1":(0,0), "2":(0,1), "3":(0,2), 
         "4":(1,0), "5":(1,1), "6":(1,2),
         "7":(2,0), "8":(2,1), "9":(2,2),
         "*":(3,0), "0":(3,1), "#":(3,2)
     }
-    
     n = len(numbers)
-    
     def reorder(i,j):
         return tuple(sorted([i,j]))
-    
     def calc_dis(n1, n2):
         i, j = grid[n1]
         k, l = grid[n2]
