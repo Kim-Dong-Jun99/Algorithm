@@ -1,20 +1,26 @@
 import sys
 
-n = int(sys.stdin.readline())
-ns = list(map(int, sys.stdin.readline().split()))
+N = int(sys.stdin.readline())
+A = list(map(int, sys.stdin.readline().split()))
 
-dp = [[] for _ in range(n)]
-max_len = []
-for i in range(n):
-    dp[i].append(ns[i])
-    if len(dp[i]) > len(max_len):
-        max_len = dp[i].copy()
-    for j in range(i + 1, n):
-        if ns[j] > ns[i] and len(dp[i]) > len(dp[j]):
-            dp[j] = dp[i].copy()
-    # print(dp)
-    # print(max_len)
+dp = [[-1,0] for _ in range(N)]
+max_len = [0,0]
+for i in range(N):
+    dp[i][1] += 1
+    if dp[i][1] > max_len[1]:
+        max_len[1] = dp[i][1]
+        max_len[0] = i
+    for j in range(i + 1, N):
+        if A[j] > A[i] and dp[i][1] > dp[j][1]:
+            dp[j][1] = dp[i][1]
+            dp[j][0] = i
 
-print(len(max_len))
-for i in max_len:
-    print("%d"%i, end=' ')
+sys.stdout.write("%d\n"%max_len[1])
+i = max_len[0]
+answer = []
+while i != -1:
+    answer.append(A[i])
+
+    i = dp[i][0]
+for i in range(len(answer)-1,-1,-1):
+    sys.stdout.write("%d "%answer[i])
