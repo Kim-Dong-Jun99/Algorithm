@@ -5,8 +5,8 @@ class Main {
 
     public static final BufferedReader BR = new BufferedReader(new InputStreamReader(System.in));
     int Q;
-    HashMap<String, Long> A;
-    HashMap<String, Long> B;
+    Hashtable<String, Long> A;
+    Hashtable<String, Long> B;
     String[] commands;
 
     public static void main(String[] args) throws Exception {
@@ -17,8 +17,8 @@ class Main {
 
     void init() throws Exception {
         Q = Integer.parseInt(BR.readLine());
-        A = new HashMap<>();
-        B = new HashMap<>();
+        A = new Hashtable<>();
+        B = new Hashtable<>();
         commands = new String[Q];
         int i = 0;
         while (i < Q) {
