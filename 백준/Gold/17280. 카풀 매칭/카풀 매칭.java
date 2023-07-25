@@ -54,6 +54,8 @@ class Main {
         while (!drivers.isEmpty() && index < N) {
             if (Xs[index] < drivers.peek().y) {
                 index += 1;
+            } else if (drivers.peek().z < Xs[index]) {
+                drivers.remove();
             } else {
                 PriorityQueue<Driver> getMinimumZ = new PriorityQueue<>(Driver::sortWithZ);
                 while (!drivers.isEmpty() && drivers.peek().y <= Xs[index]) {
