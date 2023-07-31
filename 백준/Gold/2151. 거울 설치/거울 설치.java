@@ -37,7 +37,6 @@ public class Main {
             home[i] = BR.readLine();
             for (int j = 0; j < N; j++) {
                 if (home[i].charAt(j) == DOOR) {
-//                    System.out.println("door x= " + i + " y=" + j);
                     doors.add(new Coordinate(i, j, 0, new int[]{0, 1, 2, 3}));
                 }
             }
@@ -53,31 +52,12 @@ public class Main {
         reflect.put(2, new int[]{1, 3});
         reflect.put(3, new int[]{0, 2});
     }
-
     void solution() throws IOException {
-        dijkstra[doors.get(0).x][doors.get(0).y] = 0;
-        for (int i = 0; i < 4; i++) {
-            int newX = doors.get(0).x + dx[i];
-            int newY =doors.get(0).y + dy[i];
-            while (isInner(newX, newY)) {
-//                System.out.println("loc x= " + newX + " y=" + newY);
-
-                if (home[newX].charAt(newY) == WALL) {
-                    break;
-                }
-                if (home[newX].charAt(newY) == MIRROR) {
-//                    System.out.println("mirror x= " + newX + " y=" + newY);
-
-                    dijkstra[newX][newY] = 0;
-                    toSearch.add(new Coordinate(newX, newY, 0, reflect.get(i)));
-                }
-                if (home[newX].charAt(newY) == DOOR) {
-                    System.out.println(0);
-                    return;
-                }
-                newX += dx[i];
-                newY += dy[i];
-            }
+        try {
+            initToSearch();
+        } catch (IllegalStateException e) {
+            System.out.println(0);
+            return;
         }
         while (!toSearch.isEmpty()) {
             Coordinate current = toSearch.remove();
@@ -108,6 +88,29 @@ public class Main {
         System.out.println(dijkstra[doors.get(1).x][doors.get(1).y]);
     }
 
+    void initToSearch() {
+        dijkstra[doors.get(0).x][doors.get(0).y] = 0;
+        for (int i = 0; i < 4; i++) {
+            int newX = doors.get(0).x + dx[i];
+            int newY =doors.get(0).y + dy[i];
+            while (isInner(newX, newY)) {
+                if (home[newX].charAt(newY) == WALL) {
+                    break;
+                }
+                if (home[newX].charAt(newY) == MIRROR) {
+
+                    dijkstra[newX][newY] = 0;
+                    toSearch.add(new Coordinate(newX, newY, 0, reflect.get(i)));
+                }
+                if (home[newX].charAt(newY) == DOOR) {
+                    throw new IllegalStateException();
+                }
+                newX += dx[i];
+                newY += dy[i];
+            }
+        }
+    }
+    
     boolean isInner(int i, int j) {
         return 0 <= i && i < N && 0 <= j && j < N;
     }
