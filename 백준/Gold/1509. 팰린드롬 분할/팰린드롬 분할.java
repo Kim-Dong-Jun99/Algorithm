@@ -21,19 +21,19 @@ public class Main {
     void init() throws IOException {
         givenString = BR.readLine();
         N = givenString.length();
-        isPalindrome = new boolean[N+1][N+1];
+        isPalindrome = new boolean[N][N];
         dp = new int[N+1];
         Arrays.fill(dp,2500);
-        for (int i = 1; i < N; i++) {
+        for (int i = 0; i + 1 < N; i++) {
             isPalindrome[i][i] = true;
-            if (givenString.charAt(i-1) == givenString.charAt(i)) {
+            if (givenString.charAt(i) == givenString.charAt(i+1)) {
                 isPalindrome[i][i + 1] = true;
             }
         }
-        isPalindrome[N][N] = true;
+        isPalindrome[N-1][N-1] = true;
         for (int j = 2; j <= N; j++) {
-            for (int i = 1; i + j <= N; i++) {
-                if (givenString.charAt(i-1) == givenString.charAt(i + j-1) && isPalindrome[i + 1][i + j - 1]) {
+            for (int i = 0; i + j < N; i++) {
+                if (givenString.charAt(i) == givenString.charAt(i + j) && isPalindrome[i + 1][i + j - 1]) {
                     isPalindrome[i][i + j] = true;
                 }
             }
@@ -44,7 +44,7 @@ public class Main {
         dp[0] = 0;
         for (int i = 1; i <= N; i++) {
             for (int j = 1; j <= i; j++) {
-                if (isPalindrome[j][i]) {
+                if (isPalindrome[j-1][i-1]) {
                     dp[i] = Math.min(dp[i], dp[j - 1] + 1);
                 } else {
                     dp[i] = Math.min(dp[i], dp[i - 1] + 1);
