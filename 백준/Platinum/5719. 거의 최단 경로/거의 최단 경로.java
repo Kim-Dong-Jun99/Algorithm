@@ -9,7 +9,6 @@ class Main {
     HashMap<Integer, List<Road>> roadMap;
     HashMap<Integer, List<Road>> reverseRoadMap;
     PriorityQueue<Node> nodes;
-    int[] pastPosition;
     int[] dijkstra;
     int[] almostShort;
     int index;
