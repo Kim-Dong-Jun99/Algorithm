@@ -1,16 +1,11 @@
 import java.util.*;
 
 class Solution {
+    
     int answer, k, n;
     int[] counselors;
     int[] waitingTime;
     HashMap<Integer, List<Meeting>> meetingSchedule;
-
-    public static void main(String[] args)	{
-        Solution solution = new Solution();
-        int returned = solution.solution(3, 5, new int[][]{{10, 60, 1}, {15, 100, 3}, {20, 30, 1}, {30, 50, 3}, {50, 40, 1}, {60, 30, 2}, {65, 30, 1}, {70, 100, 2}});
-        System.out.println(returned);
-    }
     public int solution(int k, int n, int[][] reqs) {
         init(k, n, reqs);
         solve();
@@ -111,10 +106,6 @@ class Solution {
                 }
             }
         }
-//        for (int c : counselors) {
-//            System.out.print(c+" ");
-//        }
-//        System.out.println();
     }
 
     static class Meeting {
