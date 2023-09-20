@@ -13,6 +13,7 @@ class Main {
     Spin[] spins;
     int totalSum;
     int totalCount;
+    boolean[][] removed;
 
     public static void main(String[] args) {
 
@@ -60,91 +61,11 @@ class Main {
 
     void solution() throws IOException {
         for (Spin spin : spins) {
-//            System.out.println("before spinning");
-//            for (int i = 1; i <= N; i++) {
-//                for (int j = 1; j <= M; j++) {
-//                    System.out.print(circles[i][j] + " ");
-//                }
-//                System.out.println();
-//            }
 
-            int x = spin.x;
-            while (x <= N) {
-                int[] removed = new int[spin.k];
-                int index;
-                if (spin.direction == CLOCKWISE) {
-                    index = 0;
-                    while (index < spin.k) {
-                        removed[index] = circles[x][M - index];
-                        index += 1;
-                    }
-                    index = M;
-                    while (index - spin.k >= 1) {
-                        circles[x][index] = circles[x][index - spin.k];
-                        index -= 1;
-                    }
-                    index = 0;
-                    while (index < spin.k) {
-                        circles[x][index + 1] = removed[spin.k - 1 - index];
-                        index += 1;
-                    }
-                } else {
-                    index = 0;
-                    while (index < spin.k) {
-                        removed[index] = circles[x][index + 1];
-                        index += 1;
-                    }
-                    index = 1;
-                    while (index + spin.k <= M) {
-                        circles[x][index] = circles[x][index + spin.k];
-                        index += 1;
-                    }
-
-                    index = 0;
-                    while (index < spin.k) {
-                        circles[x][M - index] = removed[spin.k - 1 - index];
-                        index += 1;
-                    }
-                }
-
-                x += spin.x;
-            }
-
-//            System.out.println("after spinning");
-//            for (int i = 1; i <= N; i++) {
-//                for (int j = 1; j <= M; j++) {
-//                    System.out.print(circles[i][j] + " ");
-//                }
-//                System.out.println();
-//            }
-
-            boolean globalFind = false;
-            List<Position> toRemove = new ArrayList<>();
-            boolean[][] removed = new boolean[N + 1][M + 1];
-            for (int i = 1; i <= N; i++) {
-                for (int j = 1; j <= M; j++) {
-                    if (circles[i][j] != 0) {
-                        List<Position> neighbors = getNeighbors(i, j);
-                        boolean localFind = false;
-                        for (Position neighbor : neighbors) {
-                            if (circles[i][j] == circles[neighbor.x][neighbor.y]) {
-                                if (!removed[neighbor.x][neighbor.y]) {
-                                    removed[neighbor.x][neighbor.y] = true;
-                                    toRemove.add(neighbor);
-                                }
-                                localFind = true;
-                                globalFind = true;
-                            }
-                        }
-                        if (localFind) {
-                            if (!removed[i][j]) {
-                                removed[i][j] = true;
-                                toRemove.add(new Position(i, j));
-                            }
-                        }
-                    }
-                }
-            }
+            spinCircle(spin);
+            
+            removed = new boolean[N + 1][M + 1];
+            List<Position> toRemove = getPositionToRemove();
 
             for (Position position : toRemove) {
                 totalSum -= circles[position.x][position.y];
@@ -152,39 +73,104 @@ class Main {
                 circles[position.x][position.y] = 0;
             }
 
-            if (!globalFind) {
-                double mean = totalSum / (double) totalCount;
-//                System.out.println("totalSum = " + totalSum);
-//                System.out.println("totalCount = " + totalCount);
-//                System.out.println("mean = " + mean);
-                for (int i = 1; i <= N; i++) {
-                    for (int j = 1; j <= M; j++) {
-                        if (circles[i][j] != 0) {
-                            if (circles[i][j] > mean) {
-                                circles[i][j] -= 1;
-                                totalSum -= 1;
-                            } else if (circles[i][j] < mean){
-                                circles[i][j] += 1;
-                                totalSum += 1;
-                            }
-                        }
-                    }
-                }
+            if (toRemove.isEmpty()) {
+                updateCircleValue();
             }
-//            System.out.println("after removing");
-//            for (int i = 1; i <= N; i++) {
-//                for (int j = 1; j <= M; j++) {
-//                    System.out.print(circles[i][j] + " ");
-//                }
-//                System.out.println();
-//            }
-//            System.out.println();
         }
 
 
         System.out.println(totalSum);
     }
 
+    void spinCircle(Spin spin) {
+        int x = spin.x;
+        while (x <= N) {
+            int[] removed = new int[spin.k];
+            int index;
+            if (spin.direction == CLOCKWISE) {
+                index = 0;
+                while (index < spin.k) {
+                    removed[index] = circles[x][M - index];
+                    index += 1;
+                }
+                index = M;
+                while (index - spin.k >= 1) {
+                    circles[x][index] = circles[x][index - spin.k];
+                    index -= 1;
+                }
+                index = 0;
+                while (index < spin.k) {
+                    circles[x][index + 1] = removed[spin.k - 1 - index];
+                    index += 1;
+                }
+            } else {
+                index = 0;
+                while (index < spin.k) {
+                    removed[index] = circles[x][index + 1];
+                    index += 1;
+                }
+                index = 1;
+                while (index + spin.k <= M) {
+                    circles[x][index] = circles[x][index + spin.k];
+                    index += 1;
+                }
+
+                index = 0;
+                while (index < spin.k) {
+                    circles[x][M - index] = removed[spin.k - 1 - index];
+                    index += 1;
+                }
+            }
+
+            x += spin.x;
+        }
+    }
+
+    List<Position> getPositionToRemove() {
+        List<Position> toRemove = new ArrayList<>();
+        for (int i = 1; i <= N; i++) {
+            for (int j = 1; j <= M; j++) {
+                if (circles[i][j] != 0) {
+                    List<Position> neighbors = getNeighbors(i, j);
+                    boolean localFind = false;
+                    for (Position neighbor : neighbors) {
+                        if (circles[i][j] == circles[neighbor.x][neighbor.y]) {
+                            if (!removed[neighbor.x][neighbor.y]) {
+                                removed[neighbor.x][neighbor.y] = true;
+                                toRemove.add(neighbor);
+                            }
+                            localFind = true;
+                        }
+                    }
+                    if (localFind) {
+                        if (!removed[i][j]) {
+                            removed[i][j] = true;
+                            toRemove.add(new Position(i, j));
+                        }
+                    }
+                }
+            }
+        }
+        return toRemove;
+    }
+    
+    void updateCircleValue() {
+        double mean = totalSum / (double) totalCount;
+        for (int i = 1; i <= N; i++) {
+            for (int j = 1; j <= M; j++) {
+                if (circles[i][j] != 0) {
+                    if (circles[i][j] > mean) {
+                        circles[i][j] -= 1;
+                        totalSum -= 1;
+                    } else if (circles[i][j] < mean){
+                        circles[i][j] += 1;
+                        totalSum += 1;
+                    }
+                }
+            }
+        }
+    }
+    
     static class Spin {
         int x;
         int direction;
