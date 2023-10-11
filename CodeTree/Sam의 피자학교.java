@@ -89,7 +89,7 @@ public class Main {
     }
     void rollAndPressPizza() {
         rollPizza();
-        drawPizzaToBoard();
+        drawRolledPizzaToBoard();
         pressPizza(rolledPizzaPositions, rolledPizzaBoard, rolledHeap);
     }
 
@@ -116,7 +116,7 @@ public class Main {
         }
     }
 
-    void drawPizzaToBoard() {
+    void drawRolledPizzaToBoard() {
         int direction;
         Position position = new Position(n - 1, n - 1);
         for (int i = n - 1; i > -1; i--) {
@@ -161,6 +161,12 @@ public class Main {
     }
 
     void flipAndPressPizza() {
+        drawFlippedPizzaToBoard();
+        pressPizza(flippedPizzaPositions, flippedPizzaBoard, flippedHeap);
+
+    }
+    
+    void drawFlippedPizzaToBoard() {
         int col = n / 4;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < col; j++) {
@@ -175,11 +181,7 @@ public class Main {
                 flippedHeap.add(new Position(i, j));
             }
         }
-
-        pressPizza(flippedPizzaPositions, flippedPizzaBoard, flippedHeap);
-
     }
-
     boolean finished() {
         int minimum = 3001;
         int maximum = 0;
