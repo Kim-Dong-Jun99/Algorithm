@@ -167,7 +167,6 @@ public class Main {
                     }
 
                 }
-//                ac.spreadMap.put(5 - i, temp);
                 currentPositions = temp;
             }
         }
@@ -178,7 +177,6 @@ public class Main {
     }
 
     void solution() {
-//        printSpreadMap();
         while (time < 100) {
             spreadWind();
             mixWind();
@@ -190,19 +188,6 @@ public class Main {
         }
 
     }
-
-//    void printSpreadMap() {
-//        for (AC ac : acs) {
-//            System.out.println("ac : " + ac.p.x + " " + ac.p.y);
-//            for (int cool : ac.spreadMap.keySet()) {
-//                System.out.println("cool " + cool);
-//                for (Position p : ac.spreadMap.get(cool)) {
-//                    System.out.print("("+p.x+", "+p.y+") ");
-//                }
-//                System.out.println();
-//            }
-//        }
-//    }
 
     void spreadWind() {
         for (int i = 0; i < n; i++) {
@@ -316,13 +301,11 @@ public class Main {
     static class AC {
         Position p;
         int direction;
-//        HashMap<Integer, List<Position>> spreadMap;
 
 
         public AC(Position p, int direction) {
             this.p = p;
             this.direction = direction;
-//            this.spreadMap = new HashMap<>();
         }
     }
 }
