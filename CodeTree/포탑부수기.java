@@ -5,13 +5,13 @@ public class Main {
     static final BufferedReader BR = new BufferedReader(new InputStreamReader(System.in));
     static final int[] DX = {0, 1, 0, -1, 1, 1, -1, -1};
     static final int[] DY = {1, 0, -1, 0, 1, -1, 1, -1};
+    static final int[] OPPOSITE = {2, 3, 0, 1};
     int[] inputArray;
     int N, M, K;
     int[][] board;
     int[][] lastAttack;
-    boolean[][] visited;
+    int[][] visited;
     boolean[][] attacked;
-    StringBuilder[][] direction;
     int count, distance;
     Turret attacker, target;
     int damage;
@@ -87,18 +87,15 @@ public class Main {
         lastAttack[attacker.position.x][attacker.position.y] = count + 1;
         board[attacker.position.x][attacker.position.y] += N + M;
 
-        visited = new boolean[N][M];
+        visited = new int[N][M];
         attacked = new boolean[N][M];
-        direction = new StringBuilder[N][M];
         for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                direction[i][j] = new StringBuilder();
-            }
+            Arrays.fill(visited[i], -1);
         }
         attacked[attacker.position.x][attacker.position.y] = true;
         attacked[target.position.x][target.position.y] = true;
 
-        visited[attacker.position.x][attacker.position.y] = true;
+        visited[attacker.position.x][attacker.position.y] = 4;
 
         List<Position> currentNodes = Arrays.asList(attacker.position);
         distance = 0;
@@ -107,20 +104,15 @@ public class Main {
             distance += 1;
             List<Position> temp = new ArrayList<>();
             for (Position current : currentNodes) {
-                for (int i = 0; i < 4; i++) {
-                    Position nextPosition = getNextPosition(current.x, current.y, i);
-                    if (board[nextPosition.x][nextPosition.y] > 0 && !visited[nextPosition.x][nextPosition.y]) {
+                for (int d = 0; d < 4; d++) {
+                    Position nextPosition = getNextPosition(current.x, current.y, d);
+                    if (board[nextPosition.x][nextPosition.y] > 0 && visited[nextPosition.x][nextPosition.y] == -1) {
                         temp.add(nextPosition);
-                        visited[nextPosition.x][nextPosition.y] = true;
-                        direction[nextPosition.x][nextPosition.y].append(direction[current.x][current.y]).append(i);
-                    }
-                    StringBuilder tempBuilder = new StringBuilder(direction[current.x][current.y]).append(i);
-                    if (tempBuilder.length() == direction[nextPosition.x][nextPosition.y].length() && direction[nextPosition.x][nextPosition.y].toString().compareTo(tempBuilder.toString()) > 0) {
-                        direction[nextPosition.x][nextPosition.y] = tempBuilder;
+                        visited[nextPosition.x][nextPosition.y] = d;
                     }
                 }
             }
-            if (visited[target.position.x][target.position.y]) {
+            if (visited[target.position.x][target.position.y] != -1) {
                 canGo = true;
                 break;
             }
@@ -139,24 +131,21 @@ public class Main {
 
     void attackWithLaser() {
         damage = board[attacker.position.x][attacker.position.y] / 2;
-        Position current = new Position(attacker.position.x, attacker.position.y);
-        StringBuilder destination = direction[target.position.x][target.position.y];
-        for (int i = 0; i < destination.length(); i++) {
-            int d = Character.getNumericValue(destination.charAt(i));
-            Position nextPosition = getNextPosition(current.x, current.y, d);
-            attacked[nextPosition.x][nextPosition.y] = true;
-            if (nextPosition.x == target.position.x && nextPosition.y == target.position.y) {
-                continue;
+        Position current = new Position(target.position.x, target.position.y);
+        while (true) {
+            Position nextPosition = getNextPosition(current.x, current.y, OPPOSITE[visited[current.x][current.y]]);
+            if (visited[nextPosition.x][nextPosition.y] == 4) {
+                break;
             }
+            attacked[nextPosition.x][nextPosition.y] = true;
             board[nextPosition.x][nextPosition.y] -= damage;
-
             current = nextPosition;
         }
         board[target.position.x][target.position.y] -= board[attacker.position.x][attacker.position.y];
 
     }
-    
-    
+
+
     void attackWithCannon() {
         damage = board[attacker.position.x][attacker.position.y] / 2;
         for (int i = 0; i < 8; i++) {
