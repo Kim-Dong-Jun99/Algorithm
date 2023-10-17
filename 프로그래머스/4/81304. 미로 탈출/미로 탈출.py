@@ -1,31 +1,60 @@
+import heapq as hq
+import collections
+import sys
 def solution(n, start, end, roads, traps):
-    idx=dict()
-    for i,trap in enumerate(traps):
-        idx[trap]=i
-    costs=[dict() for _ in range(n+1)]
-    branch=[[] for _ in range(n+1)]
-    for s,e,c in roads:
-        branch[s].append([e,c])
-        branch[e].append([s,-c])
-    state='0'*len(traps)
-    qu=[[start,state,0]]
-    costs[start][state]=0
-    mincost=10**9
-    while qu:
-        loc,state,cost=qu.pop(0)
-        s=0 if loc not in idx else int(state[idx[loc]])
-        for d,c in branch[loc]:
-            if d in idx:
-                cnt=int(state[idx[d]])
-                nstate=state[:idx[d]]+str(1-cnt)+state[idx[d]+1:]
+    answer = 0
+    graph = collections.defaultdict(list)
+    dijkstra = [dict() for _ in range(n+1)]
+    trap_i = {t: i for i, t in enumerate(traps)}
+    trap_state = "0"*len(traps)
+    # 0 is not revered condition / we can follow original direction
+    # 1 is reversed condition / we can follow opposite direction
+
+    for src, dest, w in roads:
+        graph[src].append((w, dest, 0))
+        if (src in traps) or (dest in traps):
+            graph[dest].append((w, src, 1))
+
+    heap = [(0, start, trap_state)]
+    dijkstra[start][trap_state] = 0
+    min_w = sys.maxsize
+
+    while heap:
+        w, src, state = hq.heappop(heap)
+
+        if src in traps:
+            src_s = int(state[trap_i[src]])
+        else:
+            src_s = 0
+
+        for dest_w, dest, is_traped in graph[src]:
+            if dest not in traps:
+                dest_s = 0
             else:
-                cnt,nstate=0,state
-            if c*(-1)**(s+cnt)>0:
-                if nstate not in costs[d] or cost+abs(c)<costs[d][nstate]:
-                    if cost+abs(c)<mincost:
-                        costs[d][nstate]=cost+abs(c)
-                        if d==end:
-                            mincost=cost+abs(c)
-                        else:
-                            qu.append([d,nstate,cost+abs(c)])
-    return mincost
+                dest_s = int(state[trap_i[dest]])
+
+            if (src_s ^ dest_s) == 1:
+                if is_traped == 0:
+                    continue
+            else:
+                if is_traped == 1:
+                    continue
+
+            total_w = w + dest_w
+
+            if dest not in traps:
+                dest_state = state
+            else:
+                n_state = state
+                n_state = state[:trap_i[dest]] + str(int(state[trap_i[dest]])^1) +                       state[trap_i[dest]+1:]
+                dest_state = n_state
+
+            if total_w < min_w:
+                if (dest_state not in dijkstra[dest]) or (dijkstra[dest][dest_state] > total_w):
+                    if total_w < min_w:
+                        dijkstra[dest][dest_state] = total_w
+                    if dest == end:
+                        min_w = min(total_w, min_w)
+                    else:
+                        hq.heappush(heap, (total_w, dest, dest_state))
+    return min_w
