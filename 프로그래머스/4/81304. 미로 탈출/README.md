@@ -1,10 +1,10 @@
 # [level 4] 미로 탈출 - 81304 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/81304?language=python3) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/81304?language=java) 
 
 ### 성능 요약
 
-메모리: 11.2 MB, 시간: 5.47 ms
+메모리: 89.3 MB, 시간: 41.42 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2023년 10월 3일 1:34:3
+2023년 10월 3일 1:44:11
 
 ### 문제 설명
 
