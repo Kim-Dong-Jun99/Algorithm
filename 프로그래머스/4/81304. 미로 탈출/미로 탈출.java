@@ -70,7 +70,6 @@ class Solution {
         heap.add(new DijkstraNode(start, 0, 0));
         while (!heap.isEmpty()) {
             DijkstraNode currentNode = heap.remove();
-//            System.out.println("current index "+currentNode.index+" flipped "+Integer.toBinaryString(currentNode.flipped));
             if (isTrap[currentNode.index]) {
                 int flipIndex = flipIndexMap.get(currentNode.index);
                 if (currentNode.flipped == (currentNode.flipped | (1 << flipIndex))) {
@@ -78,7 +77,6 @@ class Solution {
                 } else {
                     currentNode.flipped |= (1 << flipIndex);
                 }
-//                System.out.println("after flip "+Integer.toBinaryString(currentNode.flipped));
             }
             if (currentNode.index == end) {
                 return currentNode.d;
@@ -94,9 +92,6 @@ class Solution {
                     flipRoad(points[pointIndex]);
                 }
             }
-//            if (isTrap[currentNode.index]) {
-//                flipRoad(currentPoint);
-//            }
             distance[currentNode.flipped][currentNode.index] = currentNode.d;
             PriorityQueue<Road> roadHeap = new PriorityQueue<>(Road::compareWithD);
 
@@ -104,7 +99,6 @@ class Solution {
                 Integer to = roadEntry.getKey();
                 Integer d = roadEntry.getValue();
                 roadHeap.add(new Road(to, d));
-//                heap.add(new DijkstraNode(to, distance[currentNode.flipped][currentNode.index] + d, currentNode.flipped));
             }
             while (!roadHeap.isEmpty()) {
                 Road road = roadHeap.remove();
@@ -165,22 +159,6 @@ class Solution {
             }
         }
 
-//        printAfterFlip();
-    }
-
-    void printAfterFlip() {
-        System.out.println("after flip");
-        for (int i = 1; i <= n; i++) {
-            System.out.println("point " + i);
-            for (Entry<Integer, Integer> roadEntry : points[i].roadMap.entrySet()) {
-                System.out.println("road to " + roadEntry.getKey() + " distance " + roadEntry.getValue());
-            }
-            System.out.println("inDegree");
-            for (Integer inDegree : points[i].inDegree) {
-                System.out.print(inDegree+" ");
-            }
-            System.out.println();
-        }
     }
 
 
