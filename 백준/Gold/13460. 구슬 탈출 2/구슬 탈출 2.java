@@ -1,35 +1,22 @@
 import java.util.*;
 import java.io.*;
 
-
-class Main {
-    static final BufferedReader BR = new BufferedReader(new InputStreamReader(System.in));
-    static final BufferedWriter BW = new BufferedWriter(new OutputStreamWriter(System.out));
-    static final int[] DX = {-1, 1, 0, 0};
-    static final int[] DY = {0, 0, -1, 1};
-    static final Character RED = 'R';
-    static final Character BLUE = 'B';
-    static final Character HOLE = 'O';
-    static final Character WALL = '#';
-    static final Character EMPTY = '.';
+public class Main {
+    public static final BufferedReader BR = new BufferedReader(new InputStreamReader(System.in));
+    public static final BufferedWriter BW = new BufferedWriter(new OutputStreamWriter(System.out));
+    public static final int WALL = -1;
+    public static final int GOAL = 1;
+    public static final int[] DX = {0, 1, 0, -1};
+    public static final int[] DY = {1, 0, -1, 0};
     int[] inputArray;
-    int N, M;
-    Character[][] board;
-
-    Position red, blue;
-
-    int answer;
-
-    public static void main(String[] args) {
-
+    int n, m;
+    int[][] board;
+    GameStatus initStatus;
+    boolean[][][][] visited;
+    public static void main(String[] args) throws IOException {
         Main main = new Main();
-        try {
-            main.init();
-            main.solution();
-        } catch (IOException e) {
-            System.out.println("Exception during I/O");
-        }
-
+        main.init();
+        main.solve();
     }
 
     int[] getInputArray() throws IOException {
@@ -38,163 +25,145 @@ class Main {
 
     void init() throws IOException {
         inputArray = getInputArray();
-        N = inputArray[0];
-        M = inputArray[1];
+        n = inputArray[0];
+        m = inputArray[1];
+        board = new int[n][m];
+        visited = new boolean[n][m][n][m];
 
-        board = new Character[N][M];
-
-        for (int i = 0; i < N; i++) {
+        Position red = null;
+        Position blue = null;
+        for (int i = 0; i < n; i++) {
             String inputString = BR.readLine();
-            for (int j = 0; j < M; j++) {
-                board[i][j] = inputString.charAt(j);
-                if (board[i][j] == RED) {
+            for (int j = 0; j < m; j++) {
+                char c = inputString.charAt(j);
+                if (c == '#') {
+                    board[i][j] = WALL;
+                }
+                if (c == 'O') {
+                    board[i][j] = GOAL;
+                }
+                if (c == 'R') {
                     red = new Position(i, j);
-                    board[i][j] = WALL;
                 }
-                if (board[i][j] == BLUE) {
+                if (c == 'B') {
                     blue = new Position(i, j);
-                    board[i][j] = WALL;
                 }
             }
         }
 
+        visited[red.x][red.y][blue.x][blue.y] = true;
+        initStatus = new GameStatus(red, blue);
 
     }
 
-    void solution() throws IOException {
-        answer = backtrack(0);
-        if (answer > 10) {
-            System.out.println(-1);
-        } else {
-            System.out.println(answer);
-        }
-    }
+    void solve() throws IOException {
+        int result = 0;
+        List<GameStatus> statusList = Collections.singletonList(initStatus);
+        boolean isDone = false;
+        while (!statusList.isEmpty() && result < 11) {
 
-    int backtrack(int index) {
-        if (index > 10) {
-            return index;
-        }
+            List<GameStatus> temp = new ArrayList<>();
+            for (GameStatus status : statusList) {
+                for (int d = 0; d < 4; d++) {
+                    GameStatus newStatus = new GameStatus(new Position(status.red.x, status.red.y), new Position(status.blue.x, status.blue.y));
+                    if (tiltRedFirst(newStatus, d)) {
+                        tiltRed(newStatus, d);
+                        tiltBlue(newStatus, d);
+                    } else {
+                        tiltBlue(newStatus, d);
+                        tiltRed(newStatus, d);
+                    }
+                    if (!visited[newStatus.red.x][newStatus.red.y][newStatus.blue.x][newStatus.blue.y]) {
+                        visited[newStatus.red.x][newStatus.red.y][newStatus.blue.x][newStatus.blue.y] = true;
 
-
-        if (isOut(blue)) {
-            return 11;
-        }
-
-        if (isOut(red)) {
-            return index;
-        }
-
-        int toReturn = 11;
-        for (int direction : getMoveDirection()) {
-            int pastRedX = red.x;
-            int pastRedY = red.y;
-            int pastBlueX = blue.x;
-            int pastBlueY = blue.y;
-            board[pastRedX][pastRedY] = EMPTY;
-            board[pastBlueX][pastBlueY] = EMPTY;
-
-            tiltBoard(direction);
-
-            toReturn = Math.min(toReturn, backtrack(index + 1));
-
-            board[pastRedX][pastRedY] = WALL;
-            board[pastBlueX][pastBlueY] = WALL;
-            if (board[red.x][red.y] != HOLE) {
-                board[red.x][red.y] = EMPTY;
-            }
-            if (board[blue.x][blue.y] != HOLE) {
-                board[blue.x][blue.y] = EMPTY;
-            }
-
-            red.x = pastRedX;
-            red.y = pastRedY;
-            blue.x = pastBlueX;
-            blue.y = pastBlueY;
-        }
-
-        return toReturn;
-    }
-
-    void tiltBoard(int direction) {
-
-        if (red.x == blue.x && (direction >= 2)) {
-            if (direction == 2) {
-                if (red.y < blue.y) {
-                    tiltPosition(red, direction);
-                    tiltPosition(blue, direction);
-                } else {
-                    tiltPosition(blue, direction);
-                    tiltPosition(red, direction);
-                }
-            } else {
-                if (red.y > blue.y) {
-                    tiltPosition(red, direction);
-                    tiltPosition(blue, direction);
-                } else {
-                    tiltPosition(blue, direction);
-                    tiltPosition(red, direction);
+                        if (board[newStatus.red.x][newStatus.red.y] == GOAL) {
+                            if (board[newStatus.blue.x][newStatus.blue.y] != GOAL) {
+                                isDone = true;
+                            }
+                        } else {
+                            temp.add(newStatus);
+                        }
+                    }
                 }
             }
-        } else if (red.y == blue.y && (direction <= 1)) {
-            if (direction == 0) {
-                if (red.x < blue.x) {
-                    tiltPosition(red, direction);
-                    tiltPosition(blue, direction);
-                } else {
-                    tiltPosition(blue, direction);
-                    tiltPosition(red, direction);
-                }
-            } else {
-                if (red.x > blue.x) {
-                    tiltPosition(red, direction);
-                    tiltPosition(blue, direction);
-                } else {
-                    tiltPosition(blue, direction);
-                    tiltPosition(red, direction);
-                }
-            }
-        } else {
-            tiltPosition(red, direction);
-            tiltPosition(blue, direction);
-        }
-    }
-
-    void tiltPosition(Position position, int direction) {
-        while (canMove(position, direction)) {
-            position.x += DX[direction];
-            position.y += DY[direction];
-            if (isOut(position)) {
+            result += 1;
+            if (isDone) {
                 break;
             }
+            statusList = temp;
         }
-        if (board[position.x][position.y] == EMPTY) {
-            board[position.x][position.y] = WALL;
+
+        if (result <= 10 && isDone) {
+            BW.write(Integer.toString(result));
+        } else {
+            BW.write("-1");
         }
+        BW.flush();
+        BW.close();
+        BR.close();
     }
 
-    boolean canMove(Position position, int direction) {
-        return board[position.x + DX[direction]][position.y + DY[direction]] == EMPTY || board[position.x + DX[direction]][position.y + DY[direction]] == HOLE;
+    boolean tiltRedFirst(GameStatus gameStatus, int d) {
+        if (d == 0) {
+            return gameStatus.red.y > gameStatus.blue.y;
+        } else if (d == 1) {
+            return gameStatus.red.x > gameStatus.blue.x;
+        } else if (d == 2) {
+            return gameStatus.red.y < gameStatus.blue.y;
+        } else {
+            return gameStatus.red.x < gameStatus.blue.x;
+        }
+
     }
 
-    boolean isOut(Position position) {
-        return board[position.x][position.y] == HOLE;
-    }
 
-    List<Integer> getMoveDirection() {
-        List<Integer> moveDirection = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            int newRedX = red.x + DX[i];
-            int newRedY = red.y + DY[i];
-            int newBlueX = blue.x + DX[i];
-            int newBlueY = blue.y + DY[i];
-            if (board[newRedX][newRedY] == EMPTY || board[newRedX][newRedY] == HOLE ||
-                    board[newBlueX][newBlueY] == EMPTY || board[newBlueX][newBlueY] == HOLE) {
-                moveDirection.add(i);
+    void tiltRed(GameStatus status, int d) {
+        Position red = status.red;
+        Position blue = status.blue;
+
+        while (true) {
+            if (board[red.x][red.y] == GOAL) {
+                break;
             }
+            int newX = red.x + DX[d];
+            int newY = red.y + DY[d];
+
+            if (board[newX][newY] == WALL || (newX == blue.x && newY == blue.y && !(board[blue.x][blue.y] == GOAL))) {
+                break;
+            }
+            red.x = newX;
+            red.y = newY;
         }
-        return moveDirection;
     }
-    static class Position {
+
+    void tiltBlue(GameStatus status, int d) {
+        Position red = status.red;
+        Position blue = status.blue;
+
+        while (true) {
+            if (board[blue.x][blue.y] == GOAL) {
+                break;
+            }
+            int newX = blue.x + DX[d];
+            int newY = blue.y + DY[d];
+
+            if (board[newX][newY] == WALL || (newX == red.x && newY == red.y && !(board[red.x][red.y] == GOAL))) {
+                break;
+            }
+            blue.x = newX;
+            blue.y = newY;
+        }
+
+    }
+    public class Position {
+        @Override
+        public String toString() {
+            return "Position{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+        }
+
         int x;
         int y;
 
@@ -204,4 +173,25 @@ class Main {
         }
     }
 
+    public class GameStatus {
+        @Override
+        public String toString() {
+            return "GameStatus{" +
+                "red=" + red +
+                ", blue=" + blue +
+                '}';
+        }
+
+        Position red;
+        Position blue;
+
+        public GameStatus(Position red, Position blue) {
+            this.red = red;
+            this.blue = blue;
+        }
+
+
+
+
+    }
 }
