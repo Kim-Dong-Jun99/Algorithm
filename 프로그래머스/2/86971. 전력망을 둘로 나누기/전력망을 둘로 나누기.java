@@ -9,6 +9,7 @@ class Solution {
     int[] subTreeSize;
     int[] depth;
     int[][] wires;
+    boolean[] visited;
     public int solution(int n, int[][] wires) {
         init(n, wires);
         return solve();
@@ -22,8 +23,8 @@ class Solution {
         graph = new HashMap<>();
         initGraph(wires);
 
-        boolean[] visited = new boolean[n + 1];
-        initTree(0, 1, visited);
+        visited = new boolean[n + 1];
+        initTree(0, 1);
     }
 
     void initGraph(int[][] connected) {
@@ -41,14 +42,14 @@ class Solution {
         }
     }
 
-    void initTree(int depth, int node, boolean[] visited) {
+    void initTree(int depth, int node) {
         visited[node] = true;
         this.depth[node] = depth;
         List<Integer> connected = graph.get(node);
         int subTree = 1;
         for (int to : connected) {
             if (!visited[to]) {
-                initTree(depth + 1, to, visited);
+                initTree(depth + 1, to);
                 subTree += subTreeSize[to];
             }
         }
