@@ -66,7 +66,7 @@ class Solution {
                 }
             }
 
-            
+
             node = temp;
         }
 
@@ -79,12 +79,6 @@ class Solution {
                     if (i == 4) {
                         current.scores.put(Integer.parseInt(infos[i]), current.scores.getOrDefault(Integer.parseInt(infos[i]), 0) + 1);
                     } else {
-//                        if (!current.nodeMap.containsKey(infos[i])) {
-//                            current.nodeMap.put(infos[i], new Node());
-//                        }
-//                        if (!current.nodeMap.containsKey("-")) {
-//                            current.nodeMap.put("-", new Node());
-//                        }
                         temp.add(current.nodeMap.get(infos[i]));
                         temp.add(current.nodeMap.get("-"));
                     }
@@ -105,20 +99,12 @@ class Solution {
             node = temp;
         }
         for (Node n : node) {
-//            System.out.println("qwerqwerqwrqwera");
             NavigableSet<Integer> descendingKeySet = n.scores.descendingKeySet();
             int sum = 0;
             for (Integer key : descendingKeySet) {
                 sum += n.scores.get(key);
                 n.sumMap.put(key, sum);
             }
-//            int sum = sortedMap.values().stream().mapToInt(Integer::intValue).sum();
-//            for (Map.Entry<Integer, Integer> integerEntry : sortedMap.entrySet()) {
-//                System.out.println("key " + integerEntry.getKey() + " value " + integerEntry.getValue());
-//                n.sumMap.put(integerEntry.getKey(), sum);
-//                sum -= integerEntry.getValue();
-//
-//            }
         }
     }
 
@@ -138,7 +124,6 @@ class Solution {
                     if (ceilingKey != null) {
                         result[i] = current.sumMap.get(ceilingKey);
                     }
-//                    result[i] = current.scores.tailSet(Integer.parseInt(qs[d])).size();
                 } else {
                     if (!qs[d].equals("and")) {
 
