@@ -11,15 +11,12 @@ public class Main {
     int[][] board;
     int answer;
     Stack<Integer> visited;
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         Main main = new Main();
-        try {
-            main.init();
-            main.solution();
-        } catch (IOException e) {
-            System.out.println("Exception during I/O");
-        }
+        
+        main.init();
+        main.solution();
 
     }
 
