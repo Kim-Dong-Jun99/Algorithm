@@ -5,30 +5,25 @@ import java.util.stream.Stream;
 
 class Main {
     static final BufferedReader BR = new BufferedReader(new InputStreamReader(System.in));
-    static final BufferedWriter BW = new BufferedWriter(new OutputStreamWriter(System.out));
+    
     int[] inputArray;
     int N, M, H;
     boolean[][] edges;
     int answer;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         Main main = new Main();
-        try {
-            main.init();
-            main.solution();
-        } catch (IOException e) {
-            System.out.println("Exception during I/O");
-        }
-
+        main.init();
+        main.solution();
     }
 
-    Stream<String> getInputStream() throws IOException {
-        return Arrays.stream(BR.readLine().split(" "));
+    int[] getInputArray() throws IOException {
+        return Arrays.stream(BR.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
     }
 
     void init() throws IOException {
-        inputArray = getInputStream().mapToInt(Integer::parseInt).toArray();
+        inputArray = getInputArray();
         N = inputArray[0];
         M = inputArray[1];
         H = inputArray[2];
@@ -36,7 +31,7 @@ class Main {
         edges = new boolean[H + 1][N + 1];
 
         for (int i = 0; i < M; i++) {
-            inputArray = getInputStream().mapToInt(Integer::parseInt).toArray();
+            inputArray = getInputArray();
             edges[inputArray[0]][inputArray[1]] = true;
         }
     }
