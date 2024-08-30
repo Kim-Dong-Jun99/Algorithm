@@ -2,23 +2,21 @@ import sys
 from typing import *
 
 input = sys.stdin.readline
-#N : int
-
-def findHeart(board : List[str]) -> Tuple[int, int]: 
+def findHeart() -> Tuple[int, int]: 
     for i in range(N):
         for j in range(N):
             if board[i][j] == "*":
                 return (i, j)
     return (-1, -1)
     
-def findLeftArm(x : int, y : int, board : List[str]):
+def findLeftArm(x : int, y : int):
     length = 0
     while (y - 1 >= 0 and board[x][y-1] == '*'):
         length += 1
         y -= 1
     print(length, end = ' ')
     
-def findRightArm(x : int, y : int, board : List[str]):
+def findRightArm(x : int, y : int):
     length = 0
     while (y + 1 < N and board[x][y+1] == '*'):
         length += 1
@@ -26,7 +24,7 @@ def findRightArm(x : int, y : int, board : List[str]):
     print(length, end = ' ')
 
 
-def findWaist(x : int, y : int, board : List[str]) -> Tuple[int, int]:
+def findWaist(x : int, y : int) -> Tuple[int, int]:
     length = 0
     while (x + 1 < N and board[x+1][y] == '*'):
         length += 1
@@ -35,7 +33,7 @@ def findWaist(x : int, y : int, board : List[str]) -> Tuple[int, int]:
     return (x, y)
     
 
-def findLeftLeg(x : int, y : int, board : List[str]):
+def findLeftLeg(x : int, y : int):
     length = 1
     while (x + 1 < N and board[x+1][y] == '*'):
         length += 1
@@ -43,7 +41,7 @@ def findLeftLeg(x : int, y : int, board : List[str]):
     print(length, end=' ')
 
 
-def findRightLeg(x : int, y : int, board : List[str]):
+def findRightLeg(x : int, y : int):
     length = 1
     while (x + 1 < N and board[x+1][y] == '*'):
         length += 1
@@ -52,14 +50,14 @@ def findRightLeg(x : int, y : int, board : List[str]):
 
 
 if __name__ == "__main__":
-    global N
+    global N, board
     N : int = int(input())
     board : List[str] = [input() for _ in range(N)]
-    head : Tuple[int, int] = findHeart(board)
+    head : Tuple[int, int] = findHeart()
     print(head[0]+2, head[1]+1)
-    findLeftArm(head[0]+1, head[1], board)
-    findRightArm(head[0]+1, head[1], board)
-    waist : Tuple[int, int] = findWaist(head[0]+1, head[1], board)
-    findLeftLeg(waist[0]+1, waist[1]-1, board)
-    findRightLeg(waist[0]+1, waist[1]+1, board)
+    findLeftArm(head[0]+1, head[1])
+    findRightArm(head[0]+1, head[1])
+    waist : Tuple[int, int] = findWaist(head[0]+1, head[1])
+    findLeftLeg(waist[0]+1, waist[1]-1)
+    findRightLeg(waist[0]+1, waist[1]+1)
     
