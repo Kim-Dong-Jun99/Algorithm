@@ -2,10 +2,9 @@ import sys
 from typing import *
 
 input = sys.stdin.readline
-global N
+#N : int
 
 def findHeart(board : List[str]) -> Tuple[int, int]: 
-    global N
     for i in range(N):
         for j in range(N):
             if board[i][j] == "*":
@@ -13,7 +12,6 @@ def findHeart(board : List[str]) -> Tuple[int, int]:
     return (-1, -1)
     
 def findLeftArm(x : int, y : int, board : List[str]):
-    global N
     length = 0
     while (y - 1 >= 0 and board[x][y-1] == '*'):
         length += 1
@@ -21,7 +19,6 @@ def findLeftArm(x : int, y : int, board : List[str]):
     print(length, end = ' ')
     
 def findRightArm(x : int, y : int, board : List[str]):
-    global N
     length = 0
     while (y + 1 < N and board[x][y+1] == '*'):
         length += 1
@@ -30,7 +27,6 @@ def findRightArm(x : int, y : int, board : List[str]):
 
 
 def findWaist(x : int, y : int, board : List[str]) -> Tuple[int, int]:
-    global N
     length = 0
     while (x + 1 < N and board[x+1][y] == '*'):
         length += 1
@@ -40,7 +36,6 @@ def findWaist(x : int, y : int, board : List[str]) -> Tuple[int, int]:
     
 
 def findLeftLeg(x : int, y : int, board : List[str]):
-    global N
     length = 1
     while (x + 1 < N and board[x+1][y] == '*'):
         length += 1
@@ -49,7 +44,6 @@ def findLeftLeg(x : int, y : int, board : List[str]):
 
 
 def findRightLeg(x : int, y : int, board : List[str]):
-    global N
     length = 1
     while (x + 1 < N and board[x+1][y] == '*'):
         length += 1
